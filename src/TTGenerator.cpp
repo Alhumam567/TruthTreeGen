@@ -10,6 +10,7 @@
 
 class ScrolledWidgetsPane : public wxScrolledWindow
 {
+    
 public:
     ScrolledWidgetsPane(wxWindow* parent, wxWindowID id) : wxScrolledWindow(parent, id)
     {
