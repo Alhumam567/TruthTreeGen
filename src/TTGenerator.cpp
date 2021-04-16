@@ -2,6 +2,8 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
+#include <wx/textctrl.h>
+#include <wx/string.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
@@ -43,17 +45,27 @@ public:
     
     bool OnInit()
     {
-        wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
+        wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
         frame = new wxFrame((wxFrame *)NULL, -1,  wxT("Scrolling Widgets"), wxPoint(50,50), wxSize(650,650));
         
+        wxGridSizer* inputSizer = new wxGridSizer(2);
+        wxTextCtrl* argTextbox = new wxTextCtrl(frame, -1, "default arguments"); 
+        wxStaticText* argText = new wxStaticText(frame, -1, "Arguments: ");
+        wxTextCtrl* concTextbox = new wxTextCtrl(frame, -1, "default conclusion"); 
+        wxStaticText* concText = new wxStaticText(frame, -1, "Conclusion: ");
+        inputSizer->Add(argText);
+        inputSizer->Add(argTextbox);
+        inputSizer->Add(concText);
+        inputSizer->Add(concTextbox);
+        mainSizer->Add(inputSizer);
+
         ScrolledWidgetsPane* my_image = new ScrolledWidgetsPane(frame, wxID_ANY);
-        sizer->Add(my_image, 1, wxEXPAND);
-        frame->SetSizer(sizer);
+        mainSizer->Add(my_image, 1, wxEXPAND);
         
+        frame->SetSizer(mainSizer);
         frame->Show();
         return true;
     } 
 };
 
 IMPLEMENT_APP(MyApp);
-
