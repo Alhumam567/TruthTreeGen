@@ -4,12 +4,25 @@
 #include <wx/wxprec.h>
 #include <wx/textctrl.h>
 #include <wx/string.h>
+#include <string.h>
 #include <wx/gbsizer.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
 
 #include <iostream>
+
+std::string specialChars[9]{
+    "\u2200",
+    "\u2203",
+    "\u2227",
+    "\u2228",
+    "\uFFE2",
+    "\u003D",
+    "\u2260",
+    "\u2192",
+    "\u2194"
+};
 
 class ScrolledWidgetsPane : public wxScrolledWindow
 {
@@ -45,26 +58,14 @@ public:
         inputSizer->Add(concText, wxGBPosition(1, 0));
         inputSizer->Add(concTextbox, wxGBPosition(1, 1));
         
-
         wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
-        wxButton* uq = new wxButton(frame, wxID_ANY, wxT("∀"), wxDefaultPosition, wxSize(20,20));
-        wxButton* eq = new wxButton(frame, wxID_ANY, wxT("∃"), wxDefaultPosition, wxSize(20,20));
-        wxButton* neg = new wxButton(frame, wxID_ANY, wxT("¬"), wxDefaultPosition, wxSize(20,20));
-        wxButton* conj = new wxButton(frame, wxID_ANY, wxT("∧"), wxDefaultPosition, wxSize(20,20));
-        wxButton* disj = new wxButton(frame, wxID_ANY, wxT("∨"), wxDefaultPosition, wxSize(20,20));
-        wxButton* e = new wxButton(frame, wxID_ANY, wxT("="), wxDefaultPosition, wxSize(20,20));
-        wxButton* ne = new wxButton(frame, wxID_ANY, wxT("≠"), wxDefaultPosition, wxSize(20,20));
-        wxButton* cond = new wxButton(frame, wxID_ANY, wxT("→"), wxDefaultPosition, wxSize(20,20));
-        wxButton* bicond = new wxButton(frame, wxID_ANY, wxT("↔"), wxDefaultPosition, wxSize(20,20));
-        btnSizer->Add(uq, 0, wxALL, 2);
-        btnSizer->Add(eq, 0, wxALL, 2);
-        btnSizer->Add(neg, 0, wxALL, 2);
-        btnSizer->Add(conj, 0, wxALL, 2);
-        btnSizer->Add(disj, 0, wxALL, 2);
-        btnSizer->Add(e, 0, wxALL, 2);
-        btnSizer->Add(ne, 0, wxALL, 2);
-        btnSizer->Add(cond, 0, wxALL, 2);
-        btnSizer->Add(bicond, 0, wxALL, 2);
+        wxButton* charBtns[9];
+        for (int i = 0; i<9; i++) {
+            wxString mystring(specialChars[i].c_str(), wxConvUTF8);
+            charBtns[i] = new wxButton(frame, wxID_ANY, mystring, wxDefaultPosition, wxSize(20,20));
+        }
+        for (int i = 0; i<9; i++) 
+            btnSizer->Add(charBtns[i], 0, wxALL, 2);
 
         mainSizer->Add(btnSizer, 0, wxEXPAND);
         mainSizer->Add(inputSizer, 0, wxEXPAND);
