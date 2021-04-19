@@ -2,40 +2,13 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-#include <wx/textctrl.h>
-#include <wx/string.h>
-#include <string.h>
 #include <wx/gbsizer.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
 
-#include <iostream>
-
-std::string specialChars[9]{
-    "\u2200",
-    "\u2203",
-    "\u2227",
-    "\u2228",
-    "\uFFE2",
-    "\u003D",
-    "\u2260",
-    "\u2192",
-    "\u2194"
-};
-
-class ScrolledWidgetsPane : public wxScrolledWindow
-{
-    
-public:
-    ScrolledWidgetsPane(wxWindow* parent, wxWindowID id) : wxScrolledWindow(parent, id)
-    {
-        // this part makes the scrollbars show up
-        this->FitInside(); // ask the sizer about the needed size
-        this->SetScrollRate(5, 5);
-    }
-
-};
+#include "TruthTreeGen.h"
+#include "TruthTreePane.h"
 
 // A sample app that adds the scrolled pane to a frame to make this code runnable
 class MyApp: public wxApp
@@ -60,9 +33,10 @@ public:
         
         wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
         wxButton* charBtns[9];
-        for (int i = 0; i<9; i++) {
-            wxString mystring(specialChars[i].c_str(), wxConvUTF8);
-            charBtns[i] = new wxButton(frame, wxID_ANY, mystring, wxDefaultPosition, wxSize(20,20));
+        int i = 0;
+        for (auto &btn : charBtns) {
+            wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
+            btn = new wxButton(frame, wxID_ANY, mystring, wxDefaultPosition, wxSize(20,20));
         }
         for (int i = 0; i<9; i++) 
             btnSizer->Add(charBtns[i], 0, wxALL, 2);
