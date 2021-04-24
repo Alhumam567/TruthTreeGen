@@ -8,6 +8,7 @@
             "name": "Launch",
             "type": "cppdbg",
             "request": "launch",
+            "program": "${workspaceFolder}/out/myapp",
             "linux": {
                 "program": "${workspaceRoot}/out/myapp",
                 "MIMode": "gdb",
@@ -24,7 +25,7 @@
             },  
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/out",
-            "program": "${workspaceFolder}/out/myapp",
+            
             "environment": [],
             "externalConsole": false,
             "setupCommands": [
