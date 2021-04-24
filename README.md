@@ -1,4 +1,4 @@
-# TTGenerator
+# TruthTreeGen
 A Truth Tree, aka Semantic Tableaux or Analytical Tableaux, is a logic proof procedure which expands a formula into a tree structure. A branch in a Truth Tree represents a set of statements deriving from the given formula that hold true. They can occur when applying a decomposition rule on a statement in the branch where multiple different truth values allow the statement to be true. For example, the statement (PvQ) holds when P or Q are true, therefore we split the current branch into two possible scenarios, one to represent the case where P is true, and one for if Q is true:
     
        PvQ
