@@ -49,6 +49,7 @@ bool TruthTreeApp::OnInit()
     
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     wxButton* charBtns[9];
+    
     int i = 0;
     for (auto &btn : charBtns) {
         wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
