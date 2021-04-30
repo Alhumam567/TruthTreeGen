@@ -22,32 +22,6 @@ std::string specialChars[9]{
     "\u2194"
 };
 
-// void handleTxtCtrlFocus(wxFocusEvent &fe) {
-//     std::cout << fe.GetEventObject();
-// }
-
-// A sample app that adds the scrolled pane to a frame to make this code runnable
-class TruthTreeApp: public wxApp
-{
-public:
-    bool OnInit();
-};
-
-
-class TruthTreeFrame: public wxFrame 
-{
-public:
-    TruthTreeFrame();
-};
-
-class SymbolButton: public wxButton 
-{
-    wxButton *btn;
-public:
-    SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt);
-};
-
-
 
 SymbolButton::SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt) : 
     wxButton(frame, wxID_ANY, specialChar, wxDefaultPosition, wxSize(20,20))
