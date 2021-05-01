@@ -19,4 +19,15 @@ public:
     boolean isTextCtrl(wxObject *obj);
 };
 
+class SymbolButton: public wxButton 
+{
+    wxTextCtrl *&currCtrl;
+
+public:
+    SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt, wxTextCtrl *&currCtrl);
+
+    void handleClick(wxCommandEvent &ce);
+};
+
+
 #endif

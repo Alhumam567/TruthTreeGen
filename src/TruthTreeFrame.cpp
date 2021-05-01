@@ -7,12 +7,6 @@
 #include "TruthTreeGen.h"
 #include "TruthTreePane.h"
 
-SymbolButton::SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt) : 
-    wxButton(frame, wxID_ANY, specialChar, wxDefaultPosition, wxSize(20,20))
-{
-    std::cout << "Char: " << specialChar << " initialized\n";
-}
-
 TruthTreeFrame::TruthTreeFrame() : 
     wxFrame((wxFrame *)NULL, -1,  wxT("Truth Tree Generator"), wxPoint(100,50), wxSize(650,650)),
     argCtrl {new wxTextCtrl(this, -1, "default arguments", wxDefaultPosition, wxSize(350,20))},
@@ -35,7 +29,7 @@ TruthTreeFrame::TruthTreeFrame() :
     int i = 0;
     for (auto &btn : charBtns) {
         wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
-        btn = new SymbolButton(this, mystring, concCtrl);
+        btn = new SymbolButton(this, mystring, concCtrl, currCtrl);
     }
     for (int i = 0; i<9; i++) 
         btnSizer->Add(charBtns[i], 0, wxALL, 2);
@@ -63,4 +57,18 @@ wxTextCtrl *TruthTreeFrame::getCurrCtrl()
 void TruthTreeFrame::setCurrCtrl(wxTextCtrl *txt) 
 {
     this->currCtrl = txt;
+}
+
+SymbolButton::SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt, wxTextCtrl *&cCtrl) : 
+    wxButton(frame, wxID_ANY, specialChar, wxDefaultPosition, wxSize(20,20)),
+    currCtrl {cCtrl}
+{
+    Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
+    std::cout << "Char: " << specialChar << " initialized\n";
+}
+
+void SymbolButton::handleClick(wxCommandEvent &ce) 
+{
+    this->currCtrl->SetLabel(currCtrl->GetLabel().append(this->GetLabel()));
+    std::cout << "Clicked " + this->GetLabel() + "\n";
 }

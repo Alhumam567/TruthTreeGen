@@ -15,11 +15,4 @@ public:
     void handleTxtCtrl(wxFocusEvent &fe);
 };
 
-class SymbolButton: public wxButton 
-{
-    wxButton *btn;
-public:
-    SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt);
-};
-
 #endif
