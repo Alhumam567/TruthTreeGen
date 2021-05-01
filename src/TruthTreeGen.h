@@ -2,21 +2,11 @@
 #define GLOBALS_H
 
 #include <iostream>
+#include "TruthTreeFrame.h"
 
 extern std::string specialChars[9];
 
-class TruthTreeFrame: public wxFrame 
-{
-public:
-    wxTextCtrl *argCtrl, *concCtrl;
-    wxTextCtrl *currCtrl;
-
-    TruthTreeFrame();
-    wxTextCtrl *getCurrCtrl();
-    void setCurrCtrl(wxTextCtrl *txt);
-};
-
-class TruthTreeApp: public wxApp
+class TruthTreeGen: public wxApp
 {
     TruthTreeFrame *frame;
 
@@ -31,6 +21,5 @@ class SymbolButton: public wxButton
 public:
     SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt);
 };
-
 
 #endif
