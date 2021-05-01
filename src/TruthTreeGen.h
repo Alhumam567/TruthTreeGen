@@ -5,16 +5,24 @@
 
 extern std::string specialChars[9];
 
-class TruthTreeApp: public wxApp
-{
-public:
-    bool OnInit();
-};
-
 class TruthTreeFrame: public wxFrame 
 {
 public:
+    wxTextCtrl *argCtrl, *concCtrl;
+    wxTextCtrl *currCtrl;
+
     TruthTreeFrame();
+    wxTextCtrl *getCurrCtrl();
+    void setCurrCtrl(wxTextCtrl *txt);
+};
+
+class TruthTreeApp: public wxApp
+{
+    TruthTreeFrame *frame;
+
+public:
+    bool OnInit();
+    void handleTxtCtrl(wxFocusEvent &fe);
 };
 
 class SymbolButton: public wxButton 
