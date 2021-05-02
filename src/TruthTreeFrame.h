@@ -5,29 +5,33 @@
 #ifndef TTF_H 
 #define TTF_H
 
+class SymbolButton: public wxButton 
+{
+    wxTextCtrl *&currCtrl;
+    long &cursorPosition;
+    
+public:
+    SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt, wxTextCtrl *&currCtrl, long &cp);
+
+    void handleClick(wxCommandEvent &ce);
+};
+
 class TruthTreeFrame: public wxFrame 
 {
     wxTextCtrl *argCtrl, *concCtrl;
     wxTextCtrl *currCtrl;
+    SymbolButton* charBtns[9];
+    long cursorPosition;
 
 public:
     TruthTreeFrame();
 
     wxTextCtrl *getCurrCtrl();
     void setCurrCtrl(wxTextCtrl *txt);
+    void updateTxtCtrlCursorPosition();
 
     boolean isTextCtrl(wxObject *obj);
+    boolean isSpecialCharBtn(wxObject *obj);
 };
-
-class SymbolButton: public wxButton 
-{
-    wxTextCtrl *&currCtrl;
-
-public:
-    SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt, wxTextCtrl *&currCtrl);
-
-    void handleClick(wxCommandEvent &ce);
-};
-
 
 #endif

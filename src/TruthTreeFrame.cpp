@@ -11,7 +11,9 @@ TruthTreeFrame::TruthTreeFrame() :
     wxFrame((wxFrame *)NULL, -1,  wxT("Truth Tree Generator"), wxPoint(100,50), wxSize(650,650)),
     argCtrl {new wxTextCtrl(this, -1, "default arguments", wxDefaultPosition, wxSize(350,20))},
     concCtrl {new wxTextCtrl(this, -1, "default conclusion", wxDefaultPosition, wxSize(200,20))},
-    currCtrl {argCtrl}
+    currCtrl {argCtrl},
+    charBtns {},
+    cursorPosition {}
 {
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -24,12 +26,11 @@ TruthTreeFrame::TruthTreeFrame() :
     inputSizer->Add(concCtrl, wxGBPosition(1, 1));
     
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
-    SymbolButton* charBtns[9];
     
     int i = 0;
     for (auto &btn : charBtns) {
         wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
-        btn = new SymbolButton(this, mystring, concCtrl, currCtrl);
+        btn = new SymbolButton(this, mystring, concCtrl, currCtrl, cursorPosition);
     }
     for (int i = 0; i<9; i++) 
         btnSizer->Add(charBtns[i], 0, wxALL, 2);
@@ -49,6 +50,16 @@ boolean TruthTreeFrame::isTextCtrl(wxObject *obj)
     return obj == argCtrl || obj == concCtrl;
 }
 
+boolean TruthTreeFrame::isSpecialCharBtn(wxObject *obj) 
+{
+    for (auto &x : this->charBtns) {
+        if (obj == x)
+            return true;
+    }
+    
+    return false;
+}
+
 wxTextCtrl *TruthTreeFrame::getCurrCtrl() 
 {
     return this->currCtrl;
@@ -59,9 +70,16 @@ void TruthTreeFrame::setCurrCtrl(wxTextCtrl *txt)
     this->currCtrl = txt;
 }
 
-SymbolButton::SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt, wxTextCtrl *&cCtrl) : 
+void TruthTreeFrame::updateTxtCtrlCursorPosition() 
+{
+    this->cursorPosition = currCtrl->GetInsertionPoint();
+    std::cout << this->cursorPosition << "\n";
+}
+
+SymbolButton::SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt, wxTextCtrl *&cCtrl, long &cp) : 
     wxButton(frame, wxID_ANY, specialChar, wxDefaultPosition, wxSize(20,20)),
-    currCtrl {cCtrl}
+    currCtrl {cCtrl},
+    cursorPosition {cp}
 {
     Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
     std::cout << "Char: " << specialChar << " initialized\n";
@@ -69,6 +87,8 @@ SymbolButton::SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt
 
 void SymbolButton::handleClick(wxCommandEvent &ce) 
 {
-    *(this->currCtrl) << this->GetLabel();
+    wxString endString {this->currCtrl->GetRange(this->cursorPosition, this->currCtrl->GetLineLength(0))};
+    this->currCtrl->SetValue(this->currCtrl->GetRange(0, this->cursorPosition));
+    *(this->currCtrl) << this->GetLabel() << endString;
     std::cout << "Clicked " + this->GetLabel() + "\n";
 }

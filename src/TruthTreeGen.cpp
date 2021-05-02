@@ -21,8 +21,12 @@ std::string specialChars[9]{
 void TruthTreeGen::handleTxtCtrl(wxFocusEvent &fe) 
 {
     wxObject *focusObj = fe.GetEventObject();
+
     if (this->frame->isTextCtrl(focusObj)) 
         this->frame->setCurrCtrl((wxTextCtrl *) focusObj);
+    else if (this->frame->isSpecialCharBtn(focusObj))
+        this->frame->updateTxtCtrlCursorPosition();
+        
     fe.Skip();
 }
 
