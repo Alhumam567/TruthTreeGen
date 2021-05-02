@@ -93,5 +93,7 @@ void SymbolButton::handleClick(wxCommandEvent &ce)
 
     this->currCtrl->SetValue(this->currCtrl->GetRange(0, this->lastCursorPosition).Append(this->GetLabel()).Append(endString));
 
+    this->lastCursorPosition++;
+
     std::cout << "Clicked " + this->GetLabel() + "\n";
 }
