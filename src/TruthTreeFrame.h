@@ -8,8 +8,8 @@
 class SymbolButton: public wxButton 
 {
     wxTextCtrl *&currCtrl;
-    long &cursorPosition;
-    
+    long &lastCursorPosition;
+
 public:
     SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt, wxTextCtrl *&currCtrl, long &cp);
 
@@ -21,7 +21,7 @@ class TruthTreeFrame: public wxFrame
     wxTextCtrl *argCtrl, *concCtrl;
     wxTextCtrl *currCtrl;
     SymbolButton* charBtns[9];
-    long cursorPosition;
+    long lastCursorPosition;
 
 public:
     TruthTreeFrame();

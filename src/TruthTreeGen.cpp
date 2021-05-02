@@ -22,11 +22,15 @@ void TruthTreeGen::handleTxtCtrl(wxFocusEvent &fe)
 {
     wxObject *focusObj = fe.GetEventObject();
 
-    if (this->frame->isTextCtrl(focusObj)) 
+    if (this->frame->isTextCtrl(focusObj)) {
+        this->textCtrlIsChanged = true;
         this->frame->setCurrCtrl((wxTextCtrl *) focusObj);
-    else if (this->frame->isSpecialCharBtn(focusObj))
+    }
+    else if (this->textCtrlIsChanged && this->frame->isSpecialCharBtn(focusObj)) {
+        this->textCtrlIsChanged = false;
         this->frame->updateTxtCtrlCursorPosition();
-        
+    }
+    
     fe.Skip();
 }
 
@@ -34,7 +38,8 @@ bool TruthTreeGen::OnInit()
 {
     this->frame = new TruthTreeFrame();
     this->frame->Show(true); 
-
+    this->textCtrlIsChanged = true;
+    
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
 
     return true;
