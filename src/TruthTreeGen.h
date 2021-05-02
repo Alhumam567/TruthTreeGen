@@ -9,7 +9,7 @@ extern std::string specialChars[9];
 class TruthTreeGen: public wxApp
 {
     TruthTreeFrame *frame;
-    boolean textCtrlIsChanged;
+    bool textCtrlIsChanged;
 
 public:
     bool OnInit();

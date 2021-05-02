@@ -33,8 +33,8 @@ public:
     void setCurrCtrl(wxTextCtrl *txt);
     void updateTxtCtrlCursorPosition();
 
-    boolean isTextCtrl(wxObject *obj);
-    boolean isSpecialCharBtn(wxObject *obj);
+    bool isTextCtrl(wxObject *obj);
+    bool isSpecialCharBtn(wxObject *obj);
 
     void generateTree(wxCommandEvent &ce);
 };

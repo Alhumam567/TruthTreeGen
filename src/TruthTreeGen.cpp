@@ -43,6 +43,6 @@ bool TruthTreeGen::OnInit()
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
 
     return true;
-} 
+}
 
 IMPLEMENT_APP(TruthTreeGen);

@@ -60,12 +60,12 @@ void TruthTreeFrame::generateTree(wxCommandEvent &ce)
     std::cout << "Conc: " << this->concCtrl->GetValue() << "\n";
 }
 
-boolean TruthTreeFrame::isTextCtrl(wxObject *obj) 
+bool TruthTreeFrame::isTextCtrl(wxObject *obj) 
 {
     return obj == argCtrl || obj == concCtrl;
 }
 
-boolean TruthTreeFrame::isSpecialCharBtn(wxObject *obj) 
+bool TruthTreeFrame::isSpecialCharBtn(wxObject *obj) 
 {
     for (auto &x : this->charBtns) {
         if (obj == x)
