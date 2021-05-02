@@ -20,8 +20,11 @@ class TruthTreeFrame: public wxFrame
 {
     wxTextCtrl *argCtrl, *concCtrl;
     wxTextCtrl *currCtrl;
+
     SymbolButton* charBtns[9];
     long lastCursorPosition;
+
+    wxButton generateTreeBtn;
 
 public:
     TruthTreeFrame();
@@ -32,6 +35,8 @@ public:
 
     boolean isTextCtrl(wxObject *obj);
     boolean isSpecialCharBtn(wxObject *obj);
+
+    void generateTree(wxCommandEvent &ce);
 };
 
 #endif

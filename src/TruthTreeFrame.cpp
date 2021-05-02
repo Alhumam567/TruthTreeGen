@@ -13,19 +13,24 @@ TruthTreeFrame::TruthTreeFrame() :
     concCtrl {new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(200,20))},
     currCtrl {argCtrl},
     charBtns {},
-    lastCursorPosition {}
+    lastCursorPosition {},
+    generateTreeBtn {this, 1}
 {
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
     wxGridBagSizer* inputSizer = new wxGridBagSizer(2,2);
     wxStaticText* argText = new wxStaticText(this, -1, "Arguments: ");
     wxStaticText* concText = new wxStaticText(this, -1, "Conclusion: ");
+    
+    argCtrl->SetHint("Enter your arguments");
+    concCtrl->SetHint("Enter your conclusion");
+    generateTreeBtn.SetLabel("Generate Tree");
+
     inputSizer->Add(argText, wxGBPosition(0, 0));
     inputSizer->Add(argCtrl, wxGBPosition(0, 1));
     inputSizer->Add(concText, wxGBPosition(1, 0));
     inputSizer->Add(concCtrl, wxGBPosition(1, 1));
-    argCtrl->SetHint("Enter your arguments");
-    concCtrl->SetHint("Enter your conclusion");
+    inputSizer->Add(&generateTreeBtn, wxGBPosition(1, 2));
     
     wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
     
@@ -43,8 +48,16 @@ TruthTreeFrame::TruthTreeFrame() :
     TruthTreePane* my_image = new TruthTreePane(this, wxID_ANY);
     mainSizer->Add(my_image, 1, wxEXPAND);
 
+    Bind(wxEVT_BUTTON, TruthTreeFrame::generateTree, this, 1);
+
     this->SetSizer(mainSizer);
     this->Show();
+}
+
+void TruthTreeFrame::generateTree(wxCommandEvent &ce)
+{
+    std::cout << "Arguments: " << this->argCtrl->GetValue() << "\n";
+    std::cout << "Conc: " << this->concCtrl->GetValue() << "\n";
 }
 
 boolean TruthTreeFrame::isTextCtrl(wxObject *obj) 
@@ -89,10 +102,7 @@ SymbolButton::SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt
 
 void SymbolButton::handleClick(wxCommandEvent &ce) 
 {
-    wxString endString {this->currCtrl->GetRange(this->lastCursorPosition, this->currCtrl->GetLineLength(0))};
-
-    this->currCtrl->SetValue(this->currCtrl->GetRange(0, this->lastCursorPosition).Append(this->GetLabel()).Append(endString));
-
+    this->currCtrl->SetValue(this->currCtrl->GetValue().insert(this->lastCursorPosition, this->GetLabel()));
     this->lastCursorPosition++;
 
     std::cout << "Clicked " + this->GetLabel() + "\n";
