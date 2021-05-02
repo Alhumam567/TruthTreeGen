@@ -37,7 +37,7 @@ TruthTreeFrame::TruthTreeFrame() :
     mainSizer->Add(btnSizer, 0, wxEXPAND);
     mainSizer->Add(inputSizer, 0, wxEXPAND);
 
-    ScrolledWidgetsPane* my_image = new ScrolledWidgetsPane(this, wxID_ANY);
+    TruthTreePane* my_image = new TruthTreePane(this, wxID_ANY);
     mainSizer->Add(my_image, 1, wxEXPAND);
 
     this->SetSizer(mainSizer);
@@ -69,6 +69,6 @@ SymbolButton::SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt
 
 void SymbolButton::handleClick(wxCommandEvent &ce) 
 {
-    this->currCtrl->SetLabel(currCtrl->GetLabel().append(this->GetLabel()));
+    *(this->currCtrl) << this->GetLabel();
     std::cout << "Clicked " + this->GetLabel() + "\n";
 }

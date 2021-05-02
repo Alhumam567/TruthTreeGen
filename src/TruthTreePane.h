@@ -5,10 +5,10 @@
 #ifndef PANE_H
 #define PANE_H
 
-class ScrolledWidgetsPane : public wxScrolledWindow
+class TruthTreePane : public wxScrolledWindow
 {
 public:
-    ScrolledWidgetsPane(wxWindow* parent, wxWindowID id);
+    TruthTreePane(wxWindow* parent, wxWindowID id);
 };
 
 #endif
