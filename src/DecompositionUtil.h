@@ -8,7 +8,7 @@
 class DecompositionUtil
 {
 public:
-    static std::regex mainConnectiveRegex[2];
+    static std::regex mainConnectiveRegex[9];
     static std::string *decompose(std::string &statement);
     static std::string findMainConnective(std::string &statement);
 };
