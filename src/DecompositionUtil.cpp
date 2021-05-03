@@ -7,8 +7,11 @@
 #include "DecompositionUtil.h"
 
 std::regex DecompositionUtil::mainConnectiveRegex[2] {
-    std::regex("^\uFFE2(\\(.*\\))$"),
-    std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2227\uFFE2?((\\([^())]+\\))|[A-Z])$"),
+    std::regex("^\uFFE2(\\(.*\\))$"),                                                    // Negation
+    std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2227\uFFE2?((\\([^())]+\\))|[A-Z])$"),  // Conjunction
+    std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2228\uFFE2?((\\([^())]+\\))|[A-Z])$"),  // Disjunction
+    std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2192\uFFE2?((\\([^())]+\\))|[A-Z])$"),  // Conditional
+    std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2194\uFFE2?((\\([^())]+\\))|[A-Z])$"),  // Biconditional
 };
 
 std::string *DecompositionUtil::decompose(std::string &statement)

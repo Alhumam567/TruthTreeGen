@@ -9,9 +9,9 @@
 
 std::string specialChars[9]{
     "\u2200", // Universal Quantifier
-    "\u2203", // Exisentential Quantifier
-    "\u2227", // And
-    "\u2228", // Or
+    "\u2203", // Existential Quantifier
+    "\u2227", // Conjunction
+    "\u2228", // Disjunction
     "\uFFE2", // Negation
     "\u003D", // Equality
     "\u2260", // Inequality
