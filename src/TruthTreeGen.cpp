@@ -5,17 +5,18 @@
 
 #include "TruthTreeGen.h"
 #include "TruthTreePane.h"
+#include "DecompositionUtil.h"
 
 std::string specialChars[9]{
-    "\u2200",
-    "\u2203",
-    "\u2227",
-    "\u2228",
-    "\uFFE2",
-    "\u003D",
-    "\u2260",
-    "\u2192",
-    "\u2194"
+    "\u2200", // Universal Quantifier
+    "\u2203", // Exisentential Quantifier
+    "\u2227", // And
+    "\u2228", // Or
+    "\uFFE2", // Negation
+    "\u003D", // Equality
+    "\u2260", // Inequality
+    "\u2192", // Conditional
+    "\u2194"  // Biconditional
 };
 
 void TruthTreeGen::handleTxtCtrl(wxFocusEvent &fe) 
@@ -39,7 +40,8 @@ bool TruthTreeGen::OnInit()
     this->frame = new TruthTreeFrame();
     this->frame->Show(true); 
     this->textCtrlIsChanged = true;
-    
+    std::string x {"\uFFE2(PQ)"};
+    std::cout << "Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
 
     return true;
