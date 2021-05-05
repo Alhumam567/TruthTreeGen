@@ -6,31 +6,6 @@
 #include "TruthTreeGen.h"
 #include "DecompositionUtil.h"
 
-// std::regex bracketRegex = std::regex("\uFFE2?((\\([^())]+\\))|[A-Z])");
-
-// std::regex DecompositionUtil::mainConnectiveRegex[9] {
-//     std::regex("^\uFFE2(\\(.*\\))$"),  
-//     std::regex("^\uFFE2(\\(.*\\))$"),  
-//     std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2227\uFFE2?((\\([^())]+\\))|[A-Z])$"),  // Conjunction
-//     std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2228\uFFE2?((\\([^())]+\\))|[A-Z])$"),  // Disjunction
-//     std::regex("^\uFFE2(\\(.*\\))$"),                                                    // Negation
-//     std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2227\uFFE2?((\\([^())]+\\))|[A-Z])$"),
-//     std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2228\uFFE2?((\\([^())]+\\))|[A-Z])$"),
-//     std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2192\uFFE2?((\\([^())]+\\))|[A-Z])$"),  // Conditional
-//     std::regex("^\uFFE2?((\\([^())]+\\))|[A-Z])\u2194\uFFE2?((\\([^())]+\\))|[A-Z])$"),  // Biconditional
-// };
-
-std::string *DecompositionUtil::decompose(std::string &statement)
-{
-    std::string mainConn = DecompositionUtil::findMainConnective(statement);
-
-    if (mainConn == specialChars[0]) {
-
-    }
-    std::string *x = new std::string("1");
-    return x;
-}
-
 std::size_t strlen_utf8(const std::string& str) {
 	std::size_t length = 0;
 	for (char c : str) {
@@ -41,11 +16,60 @@ std::size_t strlen_utf8(const std::string& str) {
 	return length;
 }
 
-std::string DecompositionUtil::findMainConnective(std::string &statement)
+bool DecompositionUtil::decompose(std::string &statement, std::vector<std::string> *decomposedStatement)
 {
-    std::string mainConnective {"nuts"};
+    bool split;
 
-    int bracket_c {0};
+    std::string *mainConn = new std::string("");
+    int pos = DecompositionUtil::findMainConnective(statement, mainConn);
+    OP_PREC op = DecompositionUtil::getOperatorPrecendence(*mainConn);
+
+    // Decomposing rules
+    switch (op){
+        // Universal/Existential Case
+        case OP_PREC::UNIVERSAL: {
+            if (*mainConn == "\u2200") // Universal
+            {}
+            else                      // Existential
+            {}
+            break;
+        }
+        // And: Split conjuncts
+        case OP_PREC::AND: {
+            decomposedStatement->resize(2);
+
+            decomposedStatement->at(0) = statement.substr(0, pos-1);
+            decomposedStatement->at(1) = statement.substr(pos+1, strlen_utf8(statement) - 1);
+
+            split = false;
+            break;
+        }
+        case OP_PREC::OR: {
+            break;
+        }
+        case OP_PREC::NOT: {
+            break;
+        }
+        case OP_PREC::COND: {
+            if (*mainConn == "\u2192") // Conditional
+            {}
+            else                      // Biconditional
+            {}
+            break;
+        }
+        case OP_PREC::ERR: {
+            break;
+        }
+    }
+
+    return split;
+}
+
+int DecompositionUtil::findMainConnective(const std::string &statement, std::string *mainConnective)
+{
+    *mainConnective = "nuts";
+
+    int bracket_c {0}, pos {-1};
     char c;
     std::string utf8_c;
     bool isLogicalConn;
@@ -77,28 +101,30 @@ std::string DecompositionUtil::findMainConnective(std::string &statement)
         } else if (utf8_c == ")") {
             bracket_c--;
         } else if (isLogicalConn && bracket_c == 0) {
-            if (DecompositionUtil::hasHigherPrecendence(mainConnective, utf8_c))
-                mainConnective = utf8_c;
+            if (DecompositionUtil::hasHigherPrecendence(*mainConnective, utf8_c)) {
+                pos = i;
+                *mainConnective = utf8_c;
+            }
         }
         std::cout << utf8_c << " ";
     }
     std::cout << "\n";
 
-    return mainConnective;
+    return pos;
 }
 
-DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(std::string conn) {
+DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(std::string &conn) {
     if (conn == "\uFFE2") return OP_PREC::NOT;
     else if (conn == "\u2227") return OP_PREC::AND;
     else if (conn == "\u2228") return OP_PREC::OR;
     else if (conn == "\u2192") return OP_PREC::COND;
     else if (conn == "\u2194") return OP_PREC::BICOND;
-    else if (conn == "\u2200") return OP_PREC::UNIVERSALEXIST;
-    else if (conn == "\u2203") return OP_PREC::UNIVERSALEXIST;
+    else if (conn == "\u2200") return OP_PREC::UNIVERSAL;
+    else if (conn == "\u2203") return OP_PREC::EXIST;
     else return OP_PREC::ERR;
 }
 
-bool DecompositionUtil::hasHigherPrecendence(std::string oldConn, std::string newConn) {
+bool DecompositionUtil::hasHigherPrecendence(std::string &oldConn, std::string &newConn) {
     if (oldConn == "not-found") return true;
 
     OP_PREC oldP {DecompositionUtil::getOperatorPrecendence(oldConn)};
