@@ -43,37 +43,23 @@ std::size_t strlen_utf8(const std::string& str) {
 
 std::string DecompositionUtil::findMainConnective(std::string &statement)
 {
-    std::string mainConnective {"not-found"};
-
-    // // Check negation 
-    // if (statement.substr(0,2) == specialChars[4].append("(") &&
-    //         statement.back() == ')')
-    //     return specialChars[4];
-    // // Conjunction, Disjunction, Conditional, Biconditional
-
-    // std::regex binaryConnectiveRegex {"(.+)[\u2227\u2228\u2192\u2194](.+)"};
-    // std::smatch matches;
-
-    // if (std::regex_search(statement, matches, binaryConnectiveRegex)) {
-
-    // }
+    std::string mainConnective {"nuts"};
 
     int bracket_c {0};
     char c;
     std::string utf8_c;
-    bool isUTF8;
+    bool isLogicalConn;
 
     // Loop over all bytes in the sequence of characters, there could be
     // UTF-8 characters that take multiple bytes to represent
     for(std::size_t i = 0; i < statement.length(); i++){
         c = statement.at(i);
         utf8_c = c;
-        isUTF8 = false;
+        isLogicalConn = false;
 
         // If UTF-8 character
         if ((c & 0x80) == 0x80) {
             utf8_c = c;
-            isUTF8 = true;
 
             c = statement.at(++i);
             while ((c & 0xC0) == 0x80) {
@@ -81,13 +67,16 @@ std::string DecompositionUtil::findMainConnective(std::string &statement)
                 c = statement.at(++i);
             }
             i--;
+
+            if (DecompositionUtil::getOperatorPrecendence(utf8_c) != OP_PREC::ERR) 
+                isLogicalConn = true;
 		}
 
         if (utf8_c == "(") {
             bracket_c++;
         } else if (utf8_c == ")") {
             bracket_c--;
-        } else if (isUTF8 && bracket_c == 0) {
+        } else if (isLogicalConn && bracket_c == 0) {
             if (DecompositionUtil::hasHigherPrecendence(mainConnective, utf8_c))
                 mainConnective = utf8_c;
         }
@@ -106,6 +95,7 @@ DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(std::string
     else if (conn == "\u2194") return OP_PREC::BICOND;
     else if (conn == "\u2200") return OP_PREC::UNIVERSALEXIST;
     else if (conn == "\u2203") return OP_PREC::UNIVERSALEXIST;
+    else return OP_PREC::ERR;
 }
 
 bool DecompositionUtil::hasHigherPrecendence(std::string oldConn, std::string newConn) {
@@ -113,8 +103,7 @@ bool DecompositionUtil::hasHigherPrecendence(std::string oldConn, std::string ne
 
     OP_PREC oldP {DecompositionUtil::getOperatorPrecendence(oldConn)};
     OP_PREC newP {DecompositionUtil::getOperatorPrecendence(newConn)};
-    // std::cout << "oldP:" << oldP << "\n";
-    // std::cout << "newP:" << newP << "\n";
-    return oldP <= newP;
+    
+    return oldP < newP;
 }
 
