@@ -53,9 +53,54 @@ bool TruthTreeGen::OnInit()
         std::cout << x << "  |  ";
     std::cout << "\n";
     x = "\u2200x((P\u2227Q)\u2228R)\u2227\u2203y(F(x)\u2227G(x))";
-    DecompositionUtil::decompose(x, &decomp);
+    bool b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << b;
+    std::cout << "\n";
+    x = "P\u2228Q";
+    b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << b;
+    std::cout << "\n";
+    x = "\uFFE2P\u2228\uFFE2Q";
+    b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << b;
+    std::cout << "\n";
+    x = "\u2200x((P\u2227Q)\u2228R)\u2228\u2203y(F(x)\u2227G(x))";
+    b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << b;
+    std::cout << "\n";
+    x = "P\u2192Q";
+    b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << b;
+    std::cout << "\n";
+    x = "\uFFE2P\u2192\uFFE2Q";
+    b = DecompositionUtil::decompose(x, &decomp);
     for (auto x: decomp) 
         std::cout << x << "  |  ";
+    std::cout << "\n";
+    x = "\u2200x((P\u2227Q)\u2228R)\u2192\u2203y(F(x)\u2227G(x))";
+    b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << b;
+    std::cout << "\n";
+    x = "P\u2194Q";
+    b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << b;
+    std::cout << "\n";
+    x = "\uFFE2P\u2194\uFFE2Q";
+    b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << b;
+    std::cout << "\n";
+    x = "\u2200x((P\u2227Q)\u2228R)\u2194\u2203y(F(x)\u2227G(x))";
+    b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << b;
     std::cout << "\n";
     // std::cout << "1Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
     // x = "\uFFE2P";

@@ -24,6 +24,9 @@ bool DecompositionUtil::decompose(std::string &statement, std::vector<std::strin
     int pos = DecompositionUtil::findMainConnective(statement, mainConn);
     OP_PREC op = DecompositionUtil::getOperatorPrecendence(*mainConn);
 
+    std::string left {statement.substr(0, pos-1)};
+    std::string right {statement.substr(pos+1, strlen_utf8(statement) - 1)};
+
     // Decomposing rules
     switch (op){
         // Universal/Existential Case
@@ -34,27 +37,51 @@ bool DecompositionUtil::decompose(std::string &statement, std::vector<std::strin
             {}
             break;
         }
-        // And: Split conjuncts
+        // And: Split conjuncts in same branch
         case OP_PREC::AND: {
             decomposedStatement->resize(2);
 
-            decomposedStatement->at(0) = statement.substr(0, pos-1);
-            decomposedStatement->at(1) = statement.substr(pos+1, strlen_utf8(statement) - 1);
+            decomposedStatement->at(0) = left;
+            decomposedStatement->at(1) = right;
 
             split = false;
             break;
         }
+        // Or: Split disjuncts into different branches
         case OP_PREC::OR: {
+            decomposedStatement->resize(2);
+
+            decomposedStatement->at(0) = left;
+            decomposedStatement->at(1) = right;
+
+            split = true;
             break;
         }
         case OP_PREC::NOT: {
             break;
         }
+        // Conditional/Biconditional case
         case OP_PREC::COND: {
-            if (*mainConn == "\u2192") // Conditional
-            {}
-            else                      // Biconditional
-            {}
+            if (*mainConn == "\u2192") { // Conditional
+                decomposedStatement->resize(2);
+
+                decomposedStatement->at(0) = std::string("\uFFE2").append(left);   // Negation of Antecedent
+                decomposedStatement->at(1) = right;        // Consequent
+            }
+            else {                       // Biconditional
+                decomposedStatement->resize(4);
+                
+                // Both True
+                decomposedStatement->at(0) = left;
+                decomposedStatement->at(1) = right;  
+
+                // Both False
+                decomposedStatement->at(2) = std::string("\uFFE2").append(left);
+                decomposedStatement->at(3) = std::string("\uFFE2").append(right);      
+            }
+
+            split = true;
+
             break;
         }
         case OP_PREC::ERR: {
