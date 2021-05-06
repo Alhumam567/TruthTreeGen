@@ -102,6 +102,11 @@ bool TruthTreeGen::OnInit()
     for (auto x: decomp) 
         std::cout << x << b;
     std::cout << "\n";
+    x = "\uFFE2((P\u2227Q)\u2228R)";
+    b = DecompositionUtil::decompose(x, &decomp);
+    for (auto x: decomp) 
+        std::cout << x << "  " << b << "  ";
+    std::cout << "\n";
     // std::cout << "1Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
     // x = "\uFFE2P";
     // std::cout << "1Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";

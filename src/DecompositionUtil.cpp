@@ -20,15 +20,15 @@ bool DecompositionUtil::decompose(std::string &statement, std::vector<std::strin
 {
     bool split;
 
-    std::string *mainConn = new std::string("");
+    std::string *mainConn = new std::string();
     int pos = DecompositionUtil::findMainConnective(statement, mainConn);
     OP_PREC op = DecompositionUtil::getOperatorPrecendence(*mainConn);
 
     std::string left {statement.substr(0, pos-1)};
-    std::string right {statement.substr(pos+1, strlen_utf8(statement) - 1)};
+    std::string right {statement.substr(pos+1, strlen_utf8(statement) - 1)}; //wrong
 
     // Decomposing rules
-    switch (op){
+    switch (op) {
         // Universal/Existential Case
         case OP_PREC::UNIVERSAL: {
             if (*mainConn == "\u2200") // Universal
@@ -58,6 +58,20 @@ bool DecompositionUtil::decompose(std::string &statement, std::vector<std::strin
             break;
         }
         case OP_PREC::NOT: {
+            int i {0};
+            while ((statement.at(i) & 0x80) == 0x80) i++;
+            std::string innerStatement = statement.substr(i, statement.length()-1);
+            
+            if (innerStatement.at(0) == '(' && innerStatement[innerStatement.length()-1] == ')') {
+                innerStatement = innerStatement.substr(1, innerStatement.length()-2); // Strip the outer brackets
+                std::cout << "strip a: " + innerStatement << "\n";
+                split = !DecompositionUtil::decompose(innerStatement, decomposedStatement);
+
+                for (auto &ds : *decomposedStatement) {
+                    ds = std::string("\uFFE2").append(ds);
+                }
+            }
+
             break;
         }
         // Conditional/Biconditional case
