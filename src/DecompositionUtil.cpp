@@ -62,13 +62,31 @@ bool DecompositionUtil::decompose(std::string &statement, std::vector<std::strin
             while ((statement.at(i) & 0x80) == 0x80) i++;
             std::string innerStatement = statement.substr(i, statement.length()-1);
             
+            // Double check its not a literal
             if (innerStatement.at(0) == '(' && innerStatement[innerStatement.length()-1] == ')') {
-                innerStatement = innerStatement.substr(1, innerStatement.length()-2); // Strip the outer brackets
-                std::cout << "strip a: " + innerStatement << "\n";
-                split = !DecompositionUtil::decompose(innerStatement, decomposedStatement);
+                innerStatement = innerStatement.substr(1, innerStatement.length()-2);       // Strip the outer brackets
+                
+                pos = DecompositionUtil::findMainConnective(innerStatement, mainConn);
 
-                for (auto &ds : *decomposedStatement) {
-                    ds = std::string("\uFFE2").append(ds);
+                // Biconditional special case
+                if (*mainConn == "\u2194") { 
+                    split = true;
+
+                    decomposedStatement->resize(4);
+                
+                    // Left true Right false
+                    decomposedStatement->at(0) = left;
+                    decomposedStatement->at(1) = std::string("\uFFE2").append(right);  
+
+                    // Left false Right true
+                    decomposedStatement->at(2) = std::string("\uFFE2").append(left);
+                    decomposedStatement->at(3) = right;     
+                } else {
+                    split = !DecompositionUtil::decompose(innerStatement, decomposedStatement);
+
+                    for (auto &ds : *decomposedStatement) {
+                        ds = std::string("\uFFE2").append(ds);
+                    }
                 }
             }
 
