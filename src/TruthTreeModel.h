@@ -1,15 +1,20 @@
+#ifndef TTMODEL_H
+#define TTMODEL_H
+
 #include <iostream>
 #include <vector>
 
 class TruthTreeBranch
 {
-    int status;
-    char *literals;
-    std::string *decomposedStatements;
-    std::string *openStatements;
+    enum class Status { OPEN=0, CLOSED=1, COMPLETEOPEN=2 };
+    Status status;
+    
+    std::vector<std::string> literals;
+    std::vector<std::string> decomposedStatements;
+    std::vector<std::string> openStatements;
 
 public:
-    TruthTreeBranch(std::string lines);
+    TruthTreeBranch(std::vector<std::string> lines);
 
     int update(std::string *newStatements);
 };
@@ -28,3 +33,5 @@ public:
     int generateTree();
     void applyDecompositionRule(TruthTreeBranch branch, std::string statement, std::string mainConnective);
 };
+
+#endif

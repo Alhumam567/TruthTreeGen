@@ -42,102 +42,83 @@ bool TruthTreeGen::OnInit()
     this->textCtrlIsChanged = true;
     
     std::vector<std::string> decomp;
-    std::string x {"P\u2227Q"};
+    std::string x {"P\u2227(Q\u2228(R\u2192(S\u2194T)))"};
     DecompositionUtil::decompose(x, &decomp);
     for (auto x: decomp) 
         std::cout << x << "  |  ";
     std::cout << "\n";
-    x = "\uFFE2P\u2227\uFFE2Q";
-    DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << "  |  ";
-    std::cout << "\n";
-    x = "\u2200x((P\u2227Q)\u2228R)\u2227\u2203y(F(x)\u2227G(x))";
-    bool b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << b;
-    std::cout << "\n";
-    x = "P\u2228Q";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << b;
-    std::cout << "\n";
-    x = "\uFFE2P\u2228\uFFE2Q";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << b;
-    std::cout << "\n";
-    x = "\u2200x((P\u2227Q)\u2228R)\u2228\u2203y(F(x)\u2227G(x))";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << b;
-    std::cout << "\n";
-    x = "P\u2192Q";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << b;
-    std::cout << "\n";
-    x = "\uFFE2P\u2192\uFFE2Q";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << "  |  ";
-    std::cout << "\n";
-    x = "\u2200x((P\u2227Q)\u2228R)\u2192\u2203y(F(x)\u2227G(x))";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << b;
-    std::cout << "\n";
-    x = "P\u2194Q";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << b;
-    std::cout << "\n";
-    x = "\uFFE2P\u2194\uFFE2Q";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << b;
-    std::cout << "\n";
-    x = "\u2200x((P\u2227Q)\u2228R)\u2194\u2203y(F(x)\u2227G(x))";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << b;
-    std::cout << "\n";
-    x = "\uFFE2((P\u2227Q)\u2228R)";
-    b = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) 
-        std::cout << x << "  " << b << "  ";
-    std::cout << "\n";
-    // std::cout << "1Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\uFFE2P";
-    // std::cout << "1Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\uFFE2(P\u2228Q)";
-    // std::cout << "2Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "P\u2227Q";
-    // std::cout << "3Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\uFFE2P\u2228Q";
-    // std::cout << "4Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "P\u2227\uFFE2Q";
-    // std::cout << "5Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
+    x = "\uFFE2P";
+    bool b = DecompositionUtil::isLiteral(x);
+    std::cout << b << "\n";
+    x = "P";
+    b = DecompositionUtil::isLiteral(x);
+    std::cout << b << "\n";
+    x = "\uFFE2F(abc)";
+    b = DecompositionUtil::isLiteral(x);
+    std::cout << b << "\n";
+    x = "\uFFE2G(ij)";
+    b = DecompositionUtil::isLiteral(x);
+    std::cout << b << "\n";
     // x = "\uFFE2P\u2227\uFFE2Q";
-    // std::cout << "6Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\uFFE2(P\u2192Q)";
-    // std::cout << "7Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\uFFE2((P\u2227Q)\u2228R)";
-    // std::cout << "8Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\u2200x((P\u2227Q)\u2228R)";
-    // std::cout << "9Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
+    // DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << "  |  ";
+    // std::cout << "\n";
     // x = "\u2200x((P\u2227Q)\u2228R)\u2227\u2203y(F(x)\u2227G(x))";
-    // std::cout << "10Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\uFFE2\u2200x((P\u2227Q)\u2228R)";
-    // std::cout << "11Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\uFFE2R(ab)\u2227R(ba)\u2192a\u2260b";
-    // std::cout << "12Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\u2200y\u2203z(x=f(y)\u2194x=z)";
-    // std::cout << "13Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "\u2203x\u2203yx\u2260y\u2228\u2200xFx\u2192\u2200x\u2203y(Fx\u2194x=y)";
-    // std::cout << "14Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
-    // x = "P\u2194(Q\u2192(S\u2227R))";
-    // std::cout << "15Main conn: " + DecompositionUtil::findMainConnective(x) << "\n";
+    // bool b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << b;
+    // std::cout << "\n";
+    // x = "P\u2228Q";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << b;
+    // std::cout << "\n";
+    // x = "\uFFE2P\u2228\uFFE2Q";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << b;
+    // std::cout << "\n";
+    // x = "\u2200x((P\u2227Q)\u2228R)\u2228\u2203y(F(x)\u2227G(x))";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << b;
+    // std::cout << "\n";
+    // x = "P\u2192Q";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << b;
+    // std::cout << "\n";
+    // x = "\uFFE2P\u2192\uFFE2Q";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << "  |  ";
+    // std::cout << "\n";
+    // x = "\u2200x((P\u2227Q)\u2228R)\u2192\u2203y(F(x)\u2227G(x))";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << b;
+    // std::cout << "\n";
+    // x = "P\u2194Q";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << b;
+    // std::cout << "\n";
+    // x = "\uFFE2P\u2194\uFFE2Q";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << b;
+    // std::cout << "\n";
+    // x = "\u2200x((P\u2227Q)\u2228R)\u2194\u2203y(F(x)\u2227G(x))";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << b;
+    // std::cout << "\n";
+    // x = "\uFFE2((P\u2227Q)\u2228R)";
+    // b = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) 
+    //     std::cout << x << "  " << b << "  ";
+    // std::cout << "\n";
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
 
     return true;

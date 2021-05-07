@@ -6,7 +6,7 @@
 #include "TruthTreeGen.h"
 #include "DecompositionUtil.h"
 
-std::size_t strlen_utf8(const std::string& str) {
+std::size_t DecompositionUtil::strlen_utf8(const std::string& str) {
 	std::size_t length = 0;
 	for (char c : str) {
 		if ((c & 0xC0) != 0x80) {
@@ -16,7 +16,7 @@ std::size_t strlen_utf8(const std::string& str) {
 	return length;
 }
 
-bool DecompositionUtil::decompose(std::string &statement, std::vector<std::string> *decomposedStatement)
+bool DecompositionUtil::decompose(const std::string &statement, std::vector<std::string> *decomposedStatement)
 {
     bool split;
 
@@ -25,7 +25,7 @@ bool DecompositionUtil::decompose(std::string &statement, std::vector<std::strin
     OP_PREC op = DecompositionUtil::getOperatorPrecendence(*mainConn);
 
     std::string left {statement.substr(0, pos-1)};
-    std::string right {statement.substr(pos+1, strlen_utf8(statement) - 1)}; //wrong
+    std::string right {statement.substr(pos+1, statement.length() - 1)}; //wrong
 
     // Decomposing rules
     switch (op) {
@@ -57,6 +57,7 @@ bool DecompositionUtil::decompose(std::string &statement, std::vector<std::strin
             split = true;
             break;
         }
+        // Not: Depends on inner nested connective
         case OP_PREC::NOT: {
             int i {0};
             while ((statement.at(i) & 0x80) == 0x80) i++;
@@ -80,7 +81,7 @@ bool DecompositionUtil::decompose(std::string &statement, std::vector<std::strin
 
                     // Left false Right true
                     decomposedStatement->at(2) = std::string("\uFFE2").append(left);
-                    decomposedStatement->at(3) = right;     
+                    decomposedStatement->at(3) = right;    
                 } else {
                     split = !DecompositionUtil::decompose(innerStatement, decomposedStatement);
 
@@ -122,6 +123,30 @@ bool DecompositionUtil::decompose(std::string &statement, std::vector<std::strin
     }
 
     return split;
+}
+
+bool DecompositionUtil::isLiteral(const std::string &statement) 
+{
+    std::string *mainConn = new std::string();
+    DecompositionUtil::findMainConnective(statement, mainConn);
+
+    if (*mainConn != "\uFFE2" && *mainConn != "nuts") { 
+        delete mainConn;
+        return false; 
+    }
+
+    if (*mainConn == "\uFFE2") {
+        int i {0};
+        while ((statement.at(i) & 0x80) == 0x80) i++;
+
+        std::string innerStatement = statement.substr(i, statement.length()-1);
+
+        if (innerStatement[0] == '(') {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 int DecompositionUtil::findMainConnective(const std::string &statement, std::string *mainConnective)
@@ -172,7 +197,7 @@ int DecompositionUtil::findMainConnective(const std::string &statement, std::str
     return pos;
 }
 
-DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(std::string &conn) {
+DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(const std::string &conn) {
     if (conn == "\uFFE2") return OP_PREC::NOT;
     else if (conn == "\u2227") return OP_PREC::AND;
     else if (conn == "\u2228") return OP_PREC::OR;
@@ -183,7 +208,7 @@ DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(std::string
     else return OP_PREC::ERR;
 }
 
-bool DecompositionUtil::hasHigherPrecendence(std::string &oldConn, std::string &newConn) {
+bool DecompositionUtil::hasHigherPrecendence(const std::string &oldConn, const std::string &newConn) {
     if (oldConn == "not-found") return true;
 
     OP_PREC oldP {DecompositionUtil::getOperatorPrecendence(oldConn)};
