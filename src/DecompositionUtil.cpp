@@ -24,104 +24,130 @@ bool DecompositionUtil::decompose(const std::string &statement, std::vector<std:
     int pos = DecompositionUtil::findMainConnective(statement, mainConn);
     OP_PREC op = DecompositionUtil::getOperatorPrecendence(*mainConn);
 
-    std::string left {statement.substr(0, pos-1)};
-    std::string right {statement.substr(pos+1, statement.length() - 1)}; //wrong
+    std::string left {statement.substr(0, pos)};
+    std::string right {statement.substr(pos+3, statement.length() - (pos+3))}; // start at pos+3 bc main connectives are 3 bytes long
 
-    // Decomposing rules
-    switch (op) {
-        // Universal/Existential Case
-        case OP_PREC::UNIVERSAL: {
-            if (*mainConn == "\u2200") // Universal
-            {}
-            else                      // Existential
-            {}
-            break;
-        }
-        // And: Split conjuncts in same branch
-        case OP_PREC::AND: {
-            decomposedStatement->resize(2);
+    // Invalid statement cases:
+    //      - Left is empty string even though mainconnective is not negation
+    //      - Right is empty string
+    if ((left.length() == 0 && *mainConn != "\uFFE2") || right.length() == 0) {
+        decomposedStatement->resize(1);
+        decomposedStatement->at(0) = "error, invalid statement";
+        return false;
+    }
 
-            decomposedStatement->at(0) = left;
-            decomposedStatement->at(1) = right;
+    // Strip any unnecessary brackets
+    std::string *conn = new std::string();
+    DecompositionUtil::findMainConnective(left, conn);
+    if (left.length() > 0 && *conn == "nuts" && left.at(0) == '(')
+        left = left.substr(1, left.length()-2);
+    
+    DecompositionUtil::findMainConnective(right, conn);
+    if (*conn == "nuts" && right.at(0) == '(') {
+        right = right.substr(1, right.length()-2);
+    }
+    delete conn;
 
-            split = false;
-            break;
-        }
-        // Or: Split disjuncts into different branches
-        case OP_PREC::OR: {
-            decomposedStatement->resize(2);
+    bool decompose {true}, fNeg {false};
 
-            decomposedStatement->at(0) = left;
-            decomposedStatement->at(1) = right;
-
-            split = true;
-            break;
-        }
-        // Not: Depends on inner nested connective
-        case OP_PREC::NOT: {
-            int i {0};
-            while ((statement.at(i) & 0x80) == 0x80) i++;
-            std::string innerStatement = statement.substr(i, statement.length()-1);
-            
-            // Double check its not a literal
-            if (innerStatement.at(0) == '(' && innerStatement[innerStatement.length()-1] == ')') {
-                innerStatement = innerStatement.substr(1, innerStatement.length()-2);       // Strip the outer brackets
-                
-                pos = DecompositionUtil::findMainConnective(innerStatement, mainConn);
-
-                // Biconditional special case
-                if (*mainConn == "\u2194") { 
-                    split = true;
-
-                    decomposedStatement->resize(4);
-                
-                    // Left true Right false
-                    decomposedStatement->at(0) = left;
-                    decomposedStatement->at(1) = std::string("\uFFE2").append(right);  
-
-                    // Left false Right true
-                    decomposedStatement->at(2) = std::string("\uFFE2").append(left);
-                    decomposedStatement->at(3) = right;    
-                } else {
-                    split = !DecompositionUtil::decompose(innerStatement, decomposedStatement);
-
-                    for (auto &ds : *decomposedStatement) {
-                        ds = std::string("\uFFE2").append(ds);
-                    }
-                }
+    // Dum dum finite state automata
+    while (decompose) {
+        // Decomposing rules
+        switch (op) {
+            // Universal/Existential Case
+            case OP_PREC::UNIVERSAL: {
+                if (*mainConn == "\u2200") // Universal
+                {}
+                else                      // Existential
+                {}
+                break;
             }
-
-            break;
-        }
-        // Conditional/Biconditional case
-        case OP_PREC::COND: {
-            if (*mainConn == "\u2192") { // Conditional
+            // And: Split conjuncts in same branch
+            case OP_PREC::AND: {
                 decomposedStatement->resize(2);
 
-                decomposedStatement->at(0) = std::string("\uFFE2").append(left);   // Negation of Antecedent
-                decomposedStatement->at(1) = right;        // Consequent
-            }
-            else {                       // Biconditional
-                decomposedStatement->resize(4);
-                
-                // Both True
                 decomposedStatement->at(0) = left;
-                decomposedStatement->at(1) = right;  
+                decomposedStatement->at(1) = right;
 
-                // Both False
-                decomposedStatement->at(2) = std::string("\uFFE2").append(left);
-                decomposedStatement->at(3) = std::string("\uFFE2").append(right);      
+                split = decompose = false;
+                break;
             }
+            // Or: Split disjuncts into different branches
+            case OP_PREC::OR: {
+                decomposedStatement->resize(2);
 
-            split = true;
+                decomposedStatement->at(0) = left;
+                decomposedStatement->at(1) = right;
 
-            break;
-        }
-        case OP_PREC::ERR: {
-            break;
+                split = true;
+                decompose = false;
+                break;
+            }
+            // Not: Depends on inner nested connective
+            case OP_PREC::NOT: {
+                // Double check its not a literal
+                if (!DecompositionUtil::isLiteral(right)) {
+                    pos = DecompositionUtil::findMainConnective(right, mainConn);
+                    op = DecompositionUtil::getOperatorPrecendence(*mainConn);
+                    
+                    left = right.substr(0, pos);
+                    right = right.substr(pos+3, right.length() - (pos+3)); // start at pos+3 bc main connectives are 3 bytes long
+                    
+                    decompose = true;
+                    fNeg = true;
+                } else {}
+
+                break;
+            }
+            // Conditional/Biconditional case
+            case OP_PREC::COND: {
+                if (*mainConn == "\u2192") { // Conditional
+                    decomposedStatement->resize(2);
+
+                    decomposedStatement->at(0) = std::string("\uFFE2").append(left);   // Negation of Antecedent
+                    decomposedStatement->at(1) = right;        // Consequent
+                }
+                else {                       // Biconditional
+                    decomposedStatement->resize(4);
+                    
+                    // Both True
+                    decomposedStatement->at(0) = left;
+                    decomposedStatement->at(1) = right;  
+
+                    // Both False
+                    decomposedStatement->at(2) = std::string("\uFFE2").append(left);
+                    decomposedStatement->at(3) = std::string("\uFFE2").append(right);      
+                }
+
+                split = true;
+                decompose = false;
+                break;
+            }
+            case OP_PREC::ERR: {
+                decompose = false;
+                break;
+            }
         }
     }
 
+    // Cover negation:
+    if (fNeg) {
+        // Biconditional special case
+        if (*mainConn == "\u2194") { 
+            split = true;
+        
+            decomposedStatement->at(1) = std::string("\uFFE2").append(decomposedStatement->at(1)); // Left true Right false
+            decomposedStatement->at(2) = std::string("\uFFE2").append(decomposedStatement->at(2)); // Left false Right true
+        } else {
+            split = !split;
+
+            for (auto &ds : *decomposedStatement) {
+                ds = std::string("\uFFE2").append(ds);
+            }
+        }   
+    }
+
+    delete mainConn;
     return split;
 }
 
@@ -142,10 +168,12 @@ bool DecompositionUtil::isLiteral(const std::string &statement)
         std::string innerStatement = statement.substr(i, statement.length()-1);
 
         if (innerStatement[0] == '(') {
+            delete mainConn;
             return false;
         }
     }
-
+    
+    delete mainConn;
     return true;
 }
 
@@ -153,7 +181,7 @@ int DecompositionUtil::findMainConnective(const std::string &statement, std::str
 {
     *mainConnective = "nuts";
 
-    int bracket_c {0}, pos {-1};
+    int bracket_c {0}, pos {-1}, curr_pos {-1};
     char c;
     std::string utf8_c;
     bool isLogicalConn;
@@ -161,6 +189,7 @@ int DecompositionUtil::findMainConnective(const std::string &statement, std::str
     // Loop over all bytes in the sequence of characters, there could be
     // UTF-8 characters that take multiple bytes to represent
     for(std::size_t i = 0; i < statement.length(); i++){
+        curr_pos = i;
         c = statement.at(i);
         utf8_c = c;
         isLogicalConn = false;
@@ -186,13 +215,11 @@ int DecompositionUtil::findMainConnective(const std::string &statement, std::str
             bracket_c--;
         } else if (isLogicalConn && bracket_c == 0) {
             if (DecompositionUtil::hasHigherPrecendence(*mainConnective, utf8_c)) {
-                pos = i;
+                pos = curr_pos;
                 *mainConnective = utf8_c;
             }
         }
-        std::cout << utf8_c << " ";
     }
-    std::cout << "\n";
 
     return pos;
 }
