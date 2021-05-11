@@ -21,13 +21,13 @@ public:
 
 class TruthTreeModel
 {
-    std::vector<TruthTreeBranch> branches;
-    std::string *arguments;
+    std::vector<TruthTreeBranch *> branches;
+    std::vector<std::string> arguments;
     std::string conclusion;
     bool complete;
 
 public:
-    TruthTreeModel(std::string arguments, std::string conclusion);
+    TruthTreeModel(std::vector<std::string> arguments, std::string conclusion);
     ~TruthTreeModel();
 
     int generateTree();
