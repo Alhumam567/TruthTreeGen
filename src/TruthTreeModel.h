@@ -6,17 +6,21 @@
 
 class TruthTreeBranch
 {
-    enum class Status { OPEN=0, CLOSED=1, COMPLETEOPEN=2 };
-    Status status;
-    
     std::vector<std::string> literals;
     std::vector<std::string> decomposedStatements;
     std::vector<std::string> openStatements;
 
+    TruthTreeBranch *parentBranch;
+
 public:
+    enum class Status { OPEN=0, CLOSED=1, COMPLETEOPEN=2 };
+
     TruthTreeBranch(std::vector<std::string> lines);
 
-    int update(std::string *newStatements);
+    int update(std::string statement, std::vector<std::string> decomposition);
+
+private:
+    Status status;
 };
 
 class TruthTreeModel
@@ -31,7 +35,7 @@ public:
     ~TruthTreeModel();
 
     int generateTree();
-    void applyDecompositionRule(TruthTreeBranch branch, std::string statement, std::string mainConnective);
+    void applyDecompositionRule(TruthTreeBranch branch, std::string statement);
 };
 
 #endif

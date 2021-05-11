@@ -41,59 +41,69 @@ bool TruthTreeGen::OnInit()
     this->frame->Show(true); 
     this->textCtrlIsChanged = true;
 
-    for (auto x : specialChars) {
-        std::cout << "x: " << x << " , len: " << x.length() << "\n";
-    }
-    std::cout << "-------------" << "\n";
+    // for (auto x : specialChars) {
+    //     std::cout << "x: " << x << " , len: " << x.length() << "\n";
+    // }
+    // std::cout << "-------------" << "\n";
     
-    std::vector<std::string> decomp;
-    bool s;
-    std::string x;
+    // std::vector<std::string> decomp;
+    // bool s;
+    // std::string x;
 
-    x = "P\u2227(Q\u2228(R\u2192(S\u2194T)))";
-    std::cout << "x: " << x << "\n";
-    s = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) {
-        std::cout << "Len: " << x.length() << ", " << x << "  |  ";
-    }
-    std::cout << "branch: " << s << "\n";
-    std::cout << "-------------\n";
+    // x = "P\u2227(Q\u2228(R\u2192(S\u2194T)))";
+    // std::cout << "x: " << x << "\n";
+    // s = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) {
+    //     std::cout << "Len: " << x.length() << ", " << x << "  |  ";
+    // }
+    // std::cout << "branch: " << s << "\n";
+    // std::cout << "-------------\n";
 
-    x = "\u2200x((P\u2227Q)\u2228R)\u2227\u2203y(F(x)\u2227G(x))";
-    std::cout << "x: " << x << "\n";
-    s = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) {
-        std::cout << "Len: " << x.length() << ", " << x << "  |  ";
-    }
-    std::cout << "branch: " << s << "\n";
-    std::cout << "-------------\n";
+    // x = "\u2200x((P\u2227Q)\u2228R)\u2227\u2203y(F(x)\u2227G(x))";
+    // std::cout << "x: " << x << "\n";
+    // s = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) {
+    //     std::cout << "Len: " << x.length() << ", " << x << "  |  ";
+    // }
+    // std::cout << "branch: " << s << "\n";
+    // std::cout << "-------------\n";
 
-    x = "\uFFE2P\u2228\uFFE2Q";
-    std::cout << "x: " << x << "\n";
-    s = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) {
-        std::cout << "Len: " << x.length() << ", " << x << "  |  ";
-    }
-    std::cout << "branch: " << s << "\n";
-    std::cout << "-------------\n";
+    // x = "\uFFE2P\u2228\uFFE2Q";
+    // std::cout << "x: " << x << "\n";
+    // s = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) {
+    //     std::cout << "Len: " << x.length() << ", " << x << "  |  ";
+    // }
+    // std::cout << "branch: " << s << "\n";
+    // std::cout << "-------------\n";
 
-    x = "P\u2192Q";
-    std::cout << "x: " << x << "\n";
-    s = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) {
-        std::cout << "Len: " << x.length() << ", " << x << "  |  ";
-    }
-    std::cout << "branch: " << s << "\n";
-    std::cout << "-------------\n";
+    // x = "P\u2192Q";
+    // std::cout << "x: " << x << "\n";
+    // s = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) {
+    //     std::cout << "Len: " << x.length() << ", " << x << "  |  ";
+    // }
+    // std::cout << "branch: " << s << "\n";
+    // std::cout << "-------------\n";
 
-    x = "\uFFE2((P\u2227Q)\u2228R)";
-    std::cout << "x: " << x << "\n";
-    s = DecompositionUtil::decompose(x, &decomp);
-    for (auto x: decomp) {
-        std::cout << "Len: " << x.length() << ", " << x << "  |  ";
-    }
-    std::cout << "branch: " << s << "\n";
-    std::cout << "-------------\n";
+    // x = "\uFFE2((P\u2227Q)\u2228R)";
+    // std::cout << "x: " << x << "\n";
+    // s = DecompositionUtil::decompose(x, &decomp);
+    // for (auto x: decomp) {
+    //     std::cout << "Len: " << x.length() << ", " << x << "  |  ";
+    // }
+    // std::cout << "branch: " << s << "\n";
+    // std::cout << "-------------\n";
+    // std::vector<std::string> s {};
+    // std::cout << s.size() << " " << s.capacity() << "\n";
+
+    // for (auto sx : s) std::cout << sx << "\n";
+    // std::cout << "======\n";
+    // s.push_back("penis");
+    // std::cout << s.size() << " " << s.capacity() << "\n";
+
+    // for (auto sx : s) std::cout << sx << "\n";
+    // std::cout << "======\n";
 
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
 
