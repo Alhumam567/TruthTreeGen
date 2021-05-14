@@ -16,8 +16,24 @@ TruthTreeBranch::TruthTreeBranch(const std::vector<std::string> &lines, TruthTre
     }
 }
 
-int update(std::string statement, std::vector<std::string> newStatements) {
+/* Marks statement in branch as decomposed and adds any new statements from the 
+ * decomposition if there are any
+ */
+int TruthTreeBranch::update(const std::string &statement, const std::vector<std::string> &decomposition) {
+    for (auto &newS : decomposition) {
+        if (DecompositionUtil::isLiteral(newS)) 
+            literals.push_back(newS);
+        else
+            openStatements.push_back(newS);
+    }
 
+    for (std::vector<std::string>::iterator iterator = openStatements.begin(); 
+            iterator != openStatements.end(); ++iterator) {
+        if (*iterator == statement) {
+            openStatements.erase(iterator);
+            break;
+        }
+    }
 }
 
 TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const std::string &conclusion) : 
