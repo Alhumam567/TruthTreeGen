@@ -35,6 +35,8 @@ TruthTreeModel::TruthTreeModel(std::vector<std::string> arguments, std::string c
 }
 
 TruthTreeModel::~TruthTreeModel() {
+    while (!branches.empty()) 
+        branches.pop_back();
     // delete all truth tree branches
 }
 
