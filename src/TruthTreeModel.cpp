@@ -43,7 +43,13 @@ TruthTreeBranch::Status TruthTreeBranch::update(const std::string &statement, co
 }
 
 TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::string> &newLiterals) {
-
+    // Finding contradiction:
+    // - compare new literals to themselves to find contradiction
+    for (int i {0}; i < newLiterals.size(); i++) {
+        for (int j {i + 1}; j < newLiterals.size(); j++) {
+            
+        }
+    }
 }
 
 TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const std::string &conclusion) : 
