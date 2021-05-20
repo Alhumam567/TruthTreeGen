@@ -21,10 +21,12 @@ public:
 
     TruthTreeBranch(const std::vector<std::string> &lines, TruthTreeBranch *parent);
 
-    int update(const std::string &statement, const std::vector<std::string> &decomposition);
+    Status update(const std::string &statement, const std::vector<std::string> &decomposition);
 
 private:
     Status status;
+
+    Status evaluateBranch(const std::vector<std::string> &newLiterals);
 };
 
 /** Entire truth tree 

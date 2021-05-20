@@ -16,13 +16,17 @@ TruthTreeBranch::TruthTreeBranch(const std::vector<std::string> &lines, TruthTre
     }
 }
 
-/* Marks statement in branch as decomposed and adds any new statements from the 
- * decomposition if there are any
+/** Marks statement in branch as decomposed and adds any new statements from the decomposition if there are any.
+ *  Returns the status of the branch after updating. 
  */
-int TruthTreeBranch::update(const std::string &statement, const std::vector<std::string> &decomposition) {
+TruthTreeBranch::Status TruthTreeBranch::update(const std::string &statement, const std::vector<std::string> &decomposition) {
+    std::vector<std::string> newLiterals {};
+
     for (auto &newS : decomposition) {
-        if (DecompositionUtil::isLiteral(newS)) 
+        if (DecompositionUtil::isLiteral(newS)) { 
+            newLiterals.push_back(newS);
             literals.push_back(newS);
+        }
         else
             openStatements.push_back(newS);
     }
@@ -34,6 +38,12 @@ int TruthTreeBranch::update(const std::string &statement, const std::vector<std:
             break;
         }
     }
+
+    return this->evaluateBranch(newLiterals);
+}
+
+TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::string> &newLiterals) {
+
 }
 
 TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const std::string &conclusion) : 
@@ -54,7 +64,7 @@ TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const 
 }
 
 TruthTreeModel::~TruthTreeModel() {
-    // delete all truth tree branches, wrong styll
+    // delete all truth tree branches
     std::vector<TruthTreeBranch *> upperBranches {};
     std::vector<TruthTreeBranch *> currBranches = branches;
 
@@ -73,8 +83,9 @@ int TruthTreeModel::generateTree() {
     
 }
 
-/** 
- *  
+/** Takes a branch and a statement in that branch and attempt to decompose it. If the branch splits
+ *  then two new branches connected to the original are initialized. Otherwise, statements get added to
+ *  the given branch.
  **/
 bool TruthTreeModel::applyDecompositionRule(TruthTreeBranch *branch, const std::string &statement) {
     std::vector<std::string> *decomposition = new std::vector<std::string>{};
