@@ -43,13 +43,38 @@ TruthTreeBranch::Status TruthTreeBranch::update(const std::string &statement, co
 }
 
 TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::string> &newLiterals) {
-    // Finding contradiction:
-    // - compare new literals to themselves to find contradiction
+    bool completeOpen {true};
+
+    // Compare new literals to all literals in branch to find contradiction
     for (int i {0}; i < newLiterals.size(); i++) {
-        for (int j {i + 1}; j < newLiterals.size(); j++) {
-            
+        for (int j {i + 1}; j < this->literals.size(); j++) {
+            if (DecompositionUtil::isNegations(newLiterals.at(i), this->literals.at(j))) {
+                this->status = Status::CLOSED;
+                return this->status;
+            }
         }
     }
+    if (this->openStatements.size() > 0) completeOpen = false;
+
+    // Compare new literals to rest of literals in full branch to find contradiction
+    // Also check if branch has any open statements, if so mark completeOpen false
+    TruthTreeBranch *currBranch = this->parentBranch;
+    while (currBranch != NULL) {
+        for (int i {0}; i < newLiterals.size(); i++) {
+            for (int j {i + 1}; j < currBranch->literals.size(); j++) {
+                if (DecompositionUtil::isNegations(newLiterals.at(i), currBranch->literals.at(j))) {
+                    this->status = Status::CLOSED;
+                    return this->status;
+                }
+            }
+        }
+
+        if (currBranch->openStatements.size() > 0) completeOpen = false;
+    }
+
+    if (completeOpen == true) 
+        this->status = Status::COMPLETEOPEN;
+    return this->status;
 }
 
 TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const std::string &conclusion) : 

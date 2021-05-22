@@ -29,8 +29,8 @@ private:
     Status evaluateBranch(const std::vector<std::string> &newLiterals);
 };
 
-/** Entire truth tree 
- * 
+/** Entire truth tree held as an list of TruthTreeBranches. 
+ *  Arguments and conclusion are the original inputs to the model.
  **/
 class TruthTreeModel
 {

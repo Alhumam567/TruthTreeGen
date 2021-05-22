@@ -177,6 +177,17 @@ bool DecompositionUtil::isLiteral(const std::string &statement)
     return true;
 }
 
+/** Assumes inputs are literals, simply checks if they are negations of each other */
+bool DecompositionUtil::isNegations(const std::string &literal1, const std::string &literal2) {
+    std::string *mc1 = new std::string(), *mc2 = new std::string();
+    DecompositionUtil::findMainConnective(literal1, mc1);
+    DecompositionUtil::findMainConnective(literal2, mc2);
+
+    if (*mc1 == "\uFFE2") return literal1.substr(3, literal1.length()) == literal2;
+    if (*mc2 == "\uFFE2") return literal2.substr(3, literal2.length()) == literal1;
+    else return false;
+}
+
 int DecompositionUtil::findMainConnective(const std::string &statement, std::string *mainConnective)
 {
     *mainConnective = "nuts";
