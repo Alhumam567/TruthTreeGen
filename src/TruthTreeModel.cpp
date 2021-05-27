@@ -136,6 +136,14 @@ bool TruthTreeModel::applyDecompositionRule(TruthTreeBranch *branch, const std::
         TruthTreeBranch *lB = new TruthTreeBranch(lLines, branch);
         TruthTreeBranch *rB = new TruthTreeBranch(rLines, branch);
 
+        for (int i {0}; i < this->branches.size(); i++) {
+            if (this->branches[i] == branch) {
+                this->branches[i] = lB;
+                this->branches.push_back(rB);
+                break;
+            }
+        }
+
         branch->update(statement, {}); // Mark statement as decomposed
     } 
     // No splitting, append new statements to same branch
