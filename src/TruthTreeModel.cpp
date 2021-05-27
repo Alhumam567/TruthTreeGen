@@ -14,6 +14,8 @@ TruthTreeBranch::TruthTreeBranch(const std::vector<std::string> &lines, TruthTre
         else
             openStatements.push_back(s);
     }
+
+    evaluateBranch(this->literals);
 }
 
 /** Marks statement in branch as decomposed and adds any new statements from the decomposition if there are any.
