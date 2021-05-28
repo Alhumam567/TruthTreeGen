@@ -79,19 +79,25 @@ TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::s
     return this->status;
 }
 
+TruthTreeBranch::Status TruthTreeBranch::getStatus() {
+    return this->status;
+}
+
 TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const std::string &conclusion) : 
-    complete {false}
+    complete {false},
+    conclusion {conclusion},
+    arguments {arguments}
 {
-    this->arguments = arguments;
+    std::string negConc;
     if (!DecompositionUtil::isLiteral(conclusion)) {
-        this->conclusion = "\uFFE2(" + conclusion + ")";
+        negConc = "\uFFE2(" + conclusion + ")";
     } else {
-        this->conclusion = "\uFFE2" + conclusion;
+        negConc = "\uFFE2" + conclusion;
     }
 
     std::vector<std::string> allLines = arguments;
-    allLines.push_back(this->conclusion);
-    branches = {new TruthTreeBranch(arguments, NULL)}; 
+    allLines.push_back(negConc);
+    openBranches = { new TruthTreeBranch(allLines, NULL) };
 
     this->generateTree();
 }
@@ -99,7 +105,9 @@ TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const 
 TruthTreeModel::~TruthTreeModel() {
     // delete all truth tree branches
     std::vector<TruthTreeBranch *> upperBranches {};
-    std::vector<TruthTreeBranch *> currBranches = branches;
+    std::vector<TruthTreeBranch *> currBranches {};
+    currBranches.insert(currBranches.end(), closedBranches.begin(), closedBranches.end());
+    currBranches.insert(currBranches.end(), completeOpenBranches.begin(), completeOpenBranches.end());
 
     while (!upperBranches.empty() || !currBranches.empty()) {
         for (int i {0}; i < currBranches.size(); i++) {
@@ -113,7 +121,10 @@ TruthTreeModel::~TruthTreeModel() {
 }
 
 int TruthTreeModel::generateTree() {
-    
+    // while (/*not every branch is closed or there are no complete open branches*/) {
+    //     // Fully decompose all branches left to right:
+        
+    // }
 }
 
 /** Takes a branch and a statement in that branch and attempt to decompose it. If the branch splits
@@ -138,10 +149,10 @@ bool TruthTreeModel::applyDecompositionRule(TruthTreeBranch *branch, const std::
         TruthTreeBranch *lB = new TruthTreeBranch(lLines, branch);
         TruthTreeBranch *rB = new TruthTreeBranch(rLines, branch);
 
-        for (int i {0}; i < this->branches.size(); i++) {
-            if (this->branches[i] == branch) {
-                this->branches[i] = lB;
-                this->branches.push_back(rB);
+        for (int i {0}; i < this->openBranches.size(); i++) {
+            if (this->openBranches[i] == branch) {
+                this->openBranches[i] = lB;
+                this->openBranches.push_back(rB);
                 break;
             }
         }

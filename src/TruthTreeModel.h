@@ -17,10 +17,11 @@ class TruthTreeBranch
 
 public:
     TruthTreeBranch *parentBranch;
-    enum class Status { OPEN=0, CLOSED=1, COMPLETEOPEN=2 };
+    enum class Status { OPEN=0, CLOSED=1, COMPLETEOPEN=2, INT=-1 };
 
     TruthTreeBranch(const std::vector<std::string> &lines, TruthTreeBranch *parent);
 
+    Status getStatus();
     Status update(const std::string &statement, const std::vector<std::string> &decomposition);
 
 private:
@@ -29,12 +30,15 @@ private:
     Status evaluateBranch(const std::vector<std::string> &newLiterals);
 };
 
-/** Entire truth tree held as an list of TruthTreeBranches. 
+/** Entire truth tree held as a list of TruthTreeBranches. 
  *  Arguments and conclusion are the original inputs to the model.
  **/
 class TruthTreeModel
 {
-    std::vector<TruthTreeBranch *> branches;   
+    std::vector<TruthTreeBranch *> openBranches;
+    std::vector<TruthTreeBranch *> closedBranches;
+    std::vector<TruthTreeBranch *> completeOpenBranches;
+
     std::vector<std::string> arguments;
     std::string conclusion;
     bool complete;
