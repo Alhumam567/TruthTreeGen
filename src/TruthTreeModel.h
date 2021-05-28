@@ -18,15 +18,15 @@ class TruthTreeBranch
 public:
     TruthTreeBranch *parentBranch;
     enum class Status { OPEN=0, CLOSED=1, COMPLETEOPEN=2, INT=-1 };
+    Status status;
 
     TruthTreeBranch(const std::vector<std::string> &lines, TruthTreeBranch *parent);
 
-    Status getStatus();
+    void printBranch();
     Status update(const std::string &statement, const std::vector<std::string> &decomposition);
+    std::string getOpenStatement();
 
 private:
-    Status status;
-
     Status evaluateBranch(const std::vector<std::string> &newLiterals);
 };
 

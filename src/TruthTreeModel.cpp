@@ -37,6 +37,7 @@ TruthTreeBranch::Status TruthTreeBranch::update(const std::string &statement, co
             iterator != openStatements.end(); ++iterator) {
         if (*iterator == statement) {
             openStatements.erase(iterator);
+            decomposedStatements.push_back(statement);
             break;
         }
     }
@@ -49,7 +50,7 @@ TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::s
 
     // Compare new literals to all literals in branch to find contradiction
     for (int i {0}; i < newLiterals.size(); i++) {
-        for (int j {i + 1}; j < this->literals.size(); j++) {
+        for (int j {0}; j < this->literals.size(); j++) {
             if (DecompositionUtil::isNegations(newLiterals.at(i), this->literals.at(j))) {
                 this->status = Status::CLOSED;
                 return this->status;
@@ -72,6 +73,7 @@ TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::s
         }
 
         if (currBranch->openStatements.size() > 0) completeOpen = false;
+        currBranch = currBranch->parentBranch;
     }
 
     if (completeOpen == true) 
@@ -79,8 +81,24 @@ TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::s
     return this->status;
 }
 
-TruthTreeBranch::Status TruthTreeBranch::getStatus() {
-    return this->status;
+std::string TruthTreeBranch::getOpenStatement() {
+    if (this->openStatements.size() == 0) return "";
+    std::string s {this->openStatements.back()};
+    this->openStatements.pop_back();
+
+    return s;
+}
+
+void TruthTreeBranch::printBranch() {
+    for (auto s: literals) {
+        std::cout << s << "\n";
+    }
+    for (auto s: openStatements) {
+        std::cout << s << "\n";
+    }
+    for (auto s: decomposedStatements) {
+        std::cout << s << "\n";
+    }
 }
 
 TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const std::string &conclusion) : 
@@ -98,7 +116,7 @@ TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const 
     std::vector<std::string> allLines = arguments;
     allLines.push_back(negConc);
     openBranches = { new TruthTreeBranch(allLines, NULL) };
-
+    std::cout << "\nStarting truth tree generation...\n\n";
     this->generateTree();
 }
 
@@ -113,7 +131,7 @@ TruthTreeModel::~TruthTreeModel() {
         for (int i {0}; i < currBranches.size(); i++) {
             if (i % 2 == 0)
                 upperBranches.push_back(currBranches[i]->parentBranch);
-            delete currBranches[i];
+            // delete currBranches[i];
         }
         currBranches = upperBranches;
         upperBranches = {};
@@ -121,10 +139,60 @@ TruthTreeModel::~TruthTreeModel() {
 }
 
 int TruthTreeModel::generateTree() {
-    // while (/*not every branch is closed or there are no complete open branches*/) {
-    //     // Fully decompose all branches left to right:
-        
-    // }
+    TruthTreeBranch *currBranch;
+
+    // Fully decompose all branches:
+    while (openBranches.size() > 0) {
+        currBranch = this->openBranches.back();  
+        this->openBranches.pop_back();  
+        currBranch->printBranch();
+        std::cout << "end.\n";
+
+        if (currBranch->status == TruthTreeBranch::Status::OPEN) {    
+            std::string s {currBranch->getOpenStatement()};
+
+            while (s != "" && currBranch->status == TruthTreeBranch::Status::OPEN) {
+                std::cout << "Applying Decomp...\n";
+                std::cout << "Statement: " << s.length() << "\n";
+                bool b = this->applyDecompositionRule(currBranch, s);
+                
+                std::cout << "bool: " << b << "\n";
+                s = currBranch->getOpenStatement();
+            }   
+            std::cout << "Stopped\n";
+        }
+        else {
+            if (currBranch->status == TruthTreeBranch::Status::COMPLETEOPEN) this->completeOpenBranches.push_back(currBranch);
+            else if (currBranch->status == TruthTreeBranch::Status::CLOSED) this->closedBranches.push_back(currBranch);
+            else { std::cout << "Error: INT branch detected\n"; break;}
+        }
+    }
+
+    for (int i {}; i<this->closedBranches.size(); i++) {
+        TruthTreeBranch *b {this->closedBranches[i]};
+
+        std::cout << "Branch " << i << ":\n";
+        while (b != NULL) {
+            b->printBranch();
+            b = b->parentBranch;
+            std::cout << "|\n";
+        }
+
+        std::cout << "-------------------\n";
+    }
+
+    for (int i {}; i<this->completeOpenBranches.size(); i++) {
+        TruthTreeBranch *b {this->completeOpenBranches[i]};
+
+        std::cout << "Branch " << i << ":\n";
+        while (b != NULL) {
+            b->printBranch();
+            b = b->parentBranch;
+            std::cout << "|\n";
+        }
+
+        std::cout << "-------------------\n";
+    }
 }
 
 /** Takes a branch and a statement in that branch and attempt to decompose it. If the branch splits
@@ -132,36 +200,35 @@ int TruthTreeModel::generateTree() {
  *  the given branch.
  **/
 bool TruthTreeModel::applyDecompositionRule(TruthTreeBranch *branch, const std::string &statement) {
-    std::vector<std::string> *decomposition = new std::vector<std::string>{};
-
-    bool split = DecompositionUtil::decompose(statement, decomposition);
-
+    std::vector<std::string> decomposition {};
+    std::cout << "DecompUtil decompose started on " << statement << " ...\n";
+    bool split = DecompositionUtil::decompose(statement, &decomposition);
+    std::cout << "DecompUtil decompose done on " << statement << " ...\n";
     // Decomposition caused split in branch
     if (split) {
+        std::cout << "split true\n";
         std::vector<std::string> lLines, rLines;
 
         // Split decomposition into left and right branches
-        for (int i {0}; i < decomposition->size(); i++) {
-            if (i < decomposition->size()/2) lLines.push_back(decomposition->at(i));
-            else rLines.push_back(decomposition->at(i));
+        for (int i {0}; i < decomposition.size(); i++) {
+            if (i < decomposition.size()/2) lLines.push_back(decomposition.at(i));
+            else rLines.push_back(decomposition.at(i));
         }
-
+        std::cout << "Creating new branches ...\n";
         TruthTreeBranch *lB = new TruthTreeBranch(lLines, branch);
         TruthTreeBranch *rB = new TruthTreeBranch(rLines, branch);
+        
+        this->openBranches.push_back(lB);
+        this->openBranches.push_back(rB);
 
-        for (int i {0}; i < this->openBranches.size(); i++) {
-            if (this->openBranches[i] == branch) {
-                this->openBranches[i] = lB;
-                this->openBranches.push_back(rB);
-                break;
-            }
-        }
-
+        branch->status = TruthTreeBranch::Status::INT;
+        std::cout << "Updating branch ...\n";
         branch->update(statement, {}); // Mark statement as decomposed
+        std::cout << "Done applying decomposition...\n";
     } 
     // No splitting, append new statements to same branch
     else {
-        branch->update(statement, *decomposition);
+        branch->update(statement, decomposition);
     }
 
     return split;

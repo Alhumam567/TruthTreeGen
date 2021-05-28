@@ -5,6 +5,7 @@
 
 #include "TruthTreeGen.h"
 #include "TruthTreePane.h"
+#include "TruthTreeModel.h"
 #include "DecompositionUtil.h"
 
 std::string specialChars[9]{
@@ -41,6 +42,11 @@ bool TruthTreeGen::OnInit()
     this->frame->Show(true); 
     this->textCtrlIsChanged = true;
 
+    std::vector<std::string> args {"\uFFE2P\u2192(Q\u2228(R\u2192S))", "\uFFE2(S\u2228Q)"};
+    std::string conc {"R\u2192P"};
+
+    TruthTreeModel model {args, conc};
+
     // for (auto x : specialChars) {
     //     std::cout << "x: " << x << " , len: " << x.length() << "\n";
     // }
@@ -50,7 +56,7 @@ bool TruthTreeGen::OnInit()
     // bool s;
     // std::string x;
 
-    // x = "P\u2227(Q\u2228(R\u2192(S\u2194T)))";
+    // x = "\uFFE2P\u2192(Q\u2228(R\u2192S))";
     // std::cout << "x: " << x << "\n";
     // s = DecompositionUtil::decompose(x, &decomp);
     // for (auto x: decomp) {
