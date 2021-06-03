@@ -32,15 +32,8 @@ TruthTreeBranch::Status TruthTreeBranch::update(const std::string &statement, co
         else
             openStatements.push_back(newS);
     }
-
-    for (std::vector<std::string>::iterator iterator = openStatements.begin(); 
-            iterator != openStatements.end(); ++iterator) {
-        if (*iterator == statement) {
-            openStatements.erase(iterator);
-            decomposedStatements.push_back(statement);
-            break;
-        }
-    }
+    
+    decomposedStatements.push_back(statement); // Mark statement as decomposed
 
     return this->evaluateBranch(newLiterals);
 }
@@ -81,7 +74,7 @@ TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::s
     return this->status;
 }
 
-std::string TruthTreeBranch::getOpenStatement() {
+std::string TruthTreeBranch::popOpenStatement() {
     if (this->openStatements.size() == 0) return "";
     std::string s {this->openStatements.back()};
     this->openStatements.pop_back();
@@ -116,23 +109,30 @@ TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const 
     std::vector<std::string> allLines = arguments;
     allLines.push_back(negConc);
     openBranches = { new TruthTreeBranch(allLines, NULL) };
+
     std::cout << "\nStarting truth tree generation...\n\n";
+    
     this->generateTree();
 }
 
 TruthTreeModel::~TruthTreeModel() {
     // delete all truth tree branches
     std::vector<TruthTreeBranch *> upperBranches {};
-    std::vector<TruthTreeBranch *> currBranches {};
-    currBranches.insert(currBranches.end(), closedBranches.begin(), closedBranches.end());
-    currBranches.insert(currBranches.end(), completeOpenBranches.begin(), completeOpenBranches.end());
+    std::vector<TruthTreeBranch *> currBranches {closedBranches};
+    currBranches.insert(currBranches.end(), completeOpenBranches.begin(), completeOpenBranches.end()); //currBranches holds every branch
 
     while (!upperBranches.empty() || !currBranches.empty()) {
         for (int i {0}; i < currBranches.size(); i++) {
-            if (i % 2 == 0)
+            if (currBranches[i]->parentBranch != NULL && // If upper segment was already deleted
+                std::count(currBranches.begin(), currBranches.end(), currBranches[i]->parentBranch) == 0 && // If its about to be deleted this loop
+                std::count(upperBranches.begin(), upperBranches.end(), currBranches[i]->parentBranch) == 0) // If its already appended to next deletion list
                 upperBranches.push_back(currBranches[i]->parentBranch);
-            // delete currBranches[i];
+            
+            delete currBranches[i];
+
+            currBranches[i] = NULL; // Mark branch as NULL for later iterations
         }
+
         currBranches = upperBranches;
         upperBranches = {};
     }
@@ -145,21 +145,19 @@ int TruthTreeModel::generateTree() {
     while (openBranches.size() > 0) {
         currBranch = this->openBranches.back();  
         this->openBranches.pop_back();  
-        currBranch->printBranch();
-        std::cout << "end.\n";
 
         if (currBranch->status == TruthTreeBranch::Status::OPEN) {    
-            std::string s {currBranch->getOpenStatement()};
+            std::string s {currBranch->popOpenStatement()};
 
             while (s != "" && currBranch->status == TruthTreeBranch::Status::OPEN) {
-                std::cout << "Applying Decomp...\n";
-                std::cout << "Statement: " << s.length() << "\n";
+                // std::cout << "Applying Decomp...\n";
+                // std::cout << "Statement: " << s.length() << "\n";
                 bool b = this->applyDecompositionRule(currBranch, s);
                 
-                std::cout << "bool: " << b << "\n";
-                s = currBranch->getOpenStatement();
+                // std::cout << "bool: " << b << "\n";
+                s = currBranch->popOpenStatement();
             }   
-            std::cout << "Stopped\n";
+            // std::cout << "Stopped\n";
         }
         else {
             if (currBranch->status == TruthTreeBranch::Status::COMPLETEOPEN) this->completeOpenBranches.push_back(currBranch);
@@ -171,7 +169,7 @@ int TruthTreeModel::generateTree() {
     for (int i {}; i<this->closedBranches.size(); i++) {
         TruthTreeBranch *b {this->closedBranches[i]};
 
-        std::cout << "Branch " << i << ":\n";
+        std::cout << "Closed Branch " << i << ":\n";
         while (b != NULL) {
             b->printBranch();
             b = b->parentBranch;
@@ -184,7 +182,7 @@ int TruthTreeModel::generateTree() {
     for (int i {}; i<this->completeOpenBranches.size(); i++) {
         TruthTreeBranch *b {this->completeOpenBranches[i]};
 
-        std::cout << "Branch " << i << ":\n";
+        std::cout << "CO Branch " << i << ":\n";
         while (b != NULL) {
             b->printBranch();
             b = b->parentBranch;

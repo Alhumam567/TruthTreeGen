@@ -24,7 +24,7 @@ public:
 
     void printBranch();
     Status update(const std::string &statement, const std::vector<std::string> &decomposition);
-    std::string getOpenStatement();
+    std::string popOpenStatement();
 
 private:
     Status evaluateBranch(const std::vector<std::string> &newLiterals);
