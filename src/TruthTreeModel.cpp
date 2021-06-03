@@ -43,6 +43,7 @@ TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::s
 
     // Compare new literals to all literals in branch to find contradiction
     for (int i {0}; i < newLiterals.size(); i++) {
+        
         for (int j {0}; j < this->literals.size(); j++) {
             if (DecompositionUtil::isNegations(newLiterals.at(i), this->literals.at(j))) {
                 this->status = Status::CLOSED;
@@ -57,8 +58,9 @@ TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::s
     TruthTreeBranch *currBranch = this->parentBranch;
     while (currBranch != NULL) {
         for (int i {0}; i < newLiterals.size(); i++) {
-            for (int j {i + 1}; j < currBranch->literals.size(); j++) {
-                if (DecompositionUtil::isNegations(newLiterals.at(i), currBranch->literals.at(j))) {
+            for (int j {0}; j < currBranch->literals.size(); j++) {
+                std::cout << "NL: " << newLiterals[i] << " L: " << currBranch->literals[j] << "\n";
+                if (DecompositionUtil::isNegations(newLiterals[i], currBranch->literals[j])) {
                     this->status = Status::CLOSED;
                     return this->status;
                 }
@@ -99,12 +101,8 @@ TruthTreeModel::TruthTreeModel(const std::vector<std::string> &arguments, const 
     conclusion {conclusion},
     arguments {arguments}
 {
-    std::string negConc;
-    if (!DecompositionUtil::isLiteral(conclusion)) {
-        negConc = "\uFFE2(" + conclusion + ")";
-    } else {
-        negConc = "\uFFE2" + conclusion;
-    }
+    std::string negConc = conclusion;
+    DecompositionUtil::addNegation(negConc);
 
     std::vector<std::string> allLines = arguments;
     allLines.push_back(negConc);

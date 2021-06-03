@@ -16,6 +16,7 @@ private:
 
 public:
     static bool decompose(const std::string &statement, std::vector<std::string> *decomposedStatement);
+    static void addNegation(std::string &statement);
     static bool isLiteral(const std::string &statement); 
     static bool isNegations(const std::string &literal1, const std::string &literal2);
     static std::size_t strlen_utf8(const std::string &str); 

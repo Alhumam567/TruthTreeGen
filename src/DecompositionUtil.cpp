@@ -104,7 +104,8 @@ bool DecompositionUtil::decompose(const std::string &statement, std::vector<std:
                 if (*mainConn == "\u2192") { // Conditional
                     decomposedStatement->resize(2);
 
-                    decomposedStatement->at(0) = std::string("\uFFE2").append(left);   // Negation of Antecedent
+                    decomposedStatement->at(0) = left;         // Negation of Antecedent
+                    addNegation(decomposedStatement->at(0));
                     decomposedStatement->at(1) = right;        // Consequent
                 }
                 else {                       // Biconditional
@@ -115,8 +116,10 @@ bool DecompositionUtil::decompose(const std::string &statement, std::vector<std:
                     decomposedStatement->at(1) = right;  
 
                     // Both False
-                    decomposedStatement->at(2) = std::string("\uFFE2").append(left);
-                    decomposedStatement->at(3) = std::string("\uFFE2").append(right);      
+                    decomposedStatement->at(2) = left;
+                    addNegation(decomposedStatement->at(2));
+                    decomposedStatement->at(3) = right;   
+                    addNegation(decomposedStatement->at(3));   
                 }
 
                 split = true;
@@ -136,13 +139,16 @@ bool DecompositionUtil::decompose(const std::string &statement, std::vector<std:
         if (*mainConn == "\u2194") { 
             split = true;
         
-            decomposedStatement->at(1) = std::string("\uFFE2").append(decomposedStatement->at(1)); // Left true Right false
-            decomposedStatement->at(2) = std::string("\uFFE2").append(decomposedStatement->at(2)); // Left false Right true
+            // decomposedStatement->at(1) = std::string("\uFFE2").append(decomposedStatement->at(1)); // Left true Right false
+            addNegation(decomposedStatement->at(1));
+            // decomposedStatement->at(2) = std::string("\uFFE2").append(decomposedStatement->at(2)); // Left false Right true
+            addNegation(decomposedStatement->at(2));
         } else {
             split = !split;
 
             for (auto &ds : *decomposedStatement) {
-                ds = std::string("\uFFE2").append(ds);
+                // ds = std::string("\uFFE2").append(ds);
+                addNegation(ds);
             }
         }   
     }
@@ -186,6 +192,18 @@ bool DecompositionUtil::isNegations(const std::string &literal1, const std::stri
     if (*mc1 == "\uFFE2") return literal1.substr(3, literal1.length()) == literal2;
     if (*mc2 == "\uFFE2") return literal2.substr(3, literal2.length()) == literal1;
     else return false;
+}
+
+void DecompositionUtil::addNegation(std::string &statement) {
+    if (!DecompositionUtil::isLiteral(statement)) { // If compound, simply add neg with brackets
+        statement = "\uFFE2(" + statement + ")";
+    } else {                                        // Is literal
+        if (statement.substr(0, 3) == "\uFFE2")     // Check for existing neg
+            statement = statement.substr(3, statement.length() - 3);
+        else {
+            statement = "\uFFE2" + statement;
+        }
+    }
 }
 
 int DecompositionUtil::findMainConnective(const std::string &statement, std::string *mainConnective)
