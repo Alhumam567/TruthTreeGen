@@ -12,19 +12,27 @@
 class TruthTreeBranch
 {
     std::vector<std::string> literals;              // atomics, or negation of atomics: P, ~P, F(ab), ~G(x), ...
-    std::vector<std::string> decomposedStatements;  // all statements that were broken down using their main connective rule
-    std::vector<std::string> openStatements;        // all statements yet to be broken down
+    
 
 public:
     TruthTreeBranch *parentBranch;
+    TruthTreeBranch *leftBranch, *rightBranch;
     enum class Status { OPEN=0, CLOSED=1, COMPLETEOPEN=2, INT=-1 };
     Status status;
+
+
+
+    std::vector<std::string> decomposedStatements;  // all statements that were broken down using their main connective rule
+    std::vector<std::string> openStatements;        // all statements yet to be broken down
+
+
+
 
     TruthTreeBranch(const std::vector<std::string> &lines, TruthTreeBranch *parent);
 
     void printBranch();
     Status update(const std::string &statement, const std::vector<std::string> &decomposition);
-    std::string popOpenStatement();
+    TruthTreeBranch *popOpenStatement(std::string &string);
 
 private:
     Status evaluateBranch(const std::vector<std::string> &newLiterals);

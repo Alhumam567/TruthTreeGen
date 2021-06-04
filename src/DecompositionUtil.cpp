@@ -85,7 +85,7 @@ bool DecompositionUtil::decompose(const std::string &statement, std::vector<std:
             }
             // Not: Depends on inner nested connective
             case OP_PREC::NOT: {
-                // Double check its not a literal
+                // Check its not a literal
                 if (!DecompositionUtil::isLiteral(right)) {
                     pos = DecompositionUtil::findMainConnective(right, mainConn);
                     op = DecompositionUtil::getOperatorPrecendence(*mainConn);
@@ -194,10 +194,18 @@ bool DecompositionUtil::isNegations(const std::string &literal1, const std::stri
     else return false;
 }
 
+/** This function adds negations to any kind of statement. If a double negation is be created
+ *  then the statement will be automatically decomposed to remove the negation. 
+ */
 void DecompositionUtil::addNegation(std::string &statement) {
-    if (!DecompositionUtil::isLiteral(statement)) { // If compound, simply add neg with brackets
-        statement = "\uFFE2(" + statement + ")";
-    } else {                                        // Is literal
+    if (!DecompositionUtil::isLiteral(statement)) { // If compound
+        std::string *mc = new std::string();
+        DecompositionUtil::findMainConnective(statement, mc);
+        if (*mc == "\uFFE2")
+            statement = statement.substr(4,statement.length() - 4 - 1); // Skip neg and opening bracket, don't include outer bracket
+        else 
+            statement = "\uFFE2(" + statement + ")";
+    } else {                                        // If literal
         if (statement.substr(0, 3) == "\uFFE2")     // Check for existing neg
             statement = statement.substr(3, statement.length() - 3);
         else {
