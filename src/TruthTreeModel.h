@@ -13,29 +13,25 @@ class TruthTreeBranch
 {
     std::vector<std::string> literals;              // atomics, or negation of atomics: P, ~P, F(ab), ~G(x), ...
     
-
 public:
     TruthTreeBranch *parentBranch;
     TruthTreeBranch *leftBranch, *rightBranch;
     enum class Status { OPEN=0, CLOSED=1, COMPLETEOPEN=2, INT=-1 };
     Status status;
 
-
-
+    //Public for testing purposes
     std::vector<std::string> decomposedStatements;  // all statements that were broken down using their main connective rule
     std::vector<std::string> openStatements;        // all statements yet to be broken down
 
-
-
-
-    TruthTreeBranch(const std::vector<std::string> &lines, TruthTreeBranch *parent);
+    TruthTreeBranch(const std::vector<std::string> &lines, TruthTreeBranch *parent); 
 
     void printBranch();
     Status update(const std::string &statement, const std::vector<std::string> &decomposition);
+    Status evaluateBranch(const std::vector<std::string> &newLiterals);
     TruthTreeBranch *popOpenStatement(std::string &string);
 
 private:
-    Status evaluateBranch(const std::vector<std::string> &newLiterals);
+    
 };
 
 /** Entire truth tree held as a list of TruthTreeBranches. 
@@ -47,7 +43,7 @@ class TruthTreeModel
     std::vector<TruthTreeBranch *> closedBranches;
     std::vector<TruthTreeBranch *> completeOpenBranches;
 
-    std::vector<std::string> arguments;
+    std::vector<std::string> premises;
     std::string conclusion;
     bool complete;
 
@@ -57,6 +53,7 @@ public:
 
     int generateTree();
     bool applyDecompositionRule(TruthTreeBranch *branch, const std::string &statement);
+    void printModel();
 };
 
 #endif
