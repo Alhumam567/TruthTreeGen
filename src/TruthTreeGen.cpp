@@ -42,10 +42,11 @@ bool TruthTreeGen::OnInit()
     this->frame->Show(true); 
     this->textCtrlIsChanged = true;
 
-    std::vector<std::string> args {"\uFFE2P\u2192(Q\u2228(R\u2192S))", "\uFFE2(S\u2228Q)"};
-    std::string conc {"R\u2192P"};
+    std::vector<std::string> args {"\uFFE2P\u2227\uFFE2Q"};
+    std::string conc {"\uFFE2(P\u2228Q)"};
 
     TruthTreeModel model {args, conc};
+    model.printModel();
 
     // for (auto x : specialChars) {
     //     std::cout << "x: " << x << " , len: " << x.length() << "\n";
