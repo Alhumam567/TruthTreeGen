@@ -142,7 +142,7 @@ bool DecompositionUtil::decompose(const std::string &statement, std::vector<std:
             // decomposedStatement->at(1) = std::string("\uFFE2").append(decomposedStatement->at(1)); // Left true Right false
             addNegation(decomposedStatement->at(1));
             // decomposedStatement->at(2) = std::string("\uFFE2").append(decomposedStatement->at(2)); // Left false Right true
-            addNegation(decomposedStatement->at(2));
+            addNegation(decomposedStatement->at(3));
         } else {
             split = !split;
 

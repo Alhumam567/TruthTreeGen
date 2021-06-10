@@ -15,7 +15,7 @@ std::string specialChars[9]{
     "\u2227", // Conjunction
     "\u2228", // Disjunction
     "\u2192", // Conditional
-    "\u2194",  // Biconditional
+    "\u2194", // Biconditional
     "\u003D", // Equality
     "\u2260", // Inequality
 };
@@ -42,11 +42,15 @@ bool TruthTreeGen::OnInit()
     this->frame->Show(true); 
     this->textCtrlIsChanged = true;
 
-    std::vector<std::string> args {"\uFFE2(P\u2192Q)"};
-    std::string conc {"P\u2227\uFFE2Q"};
+    std::vector<std::string> args {"\uFFE2(P\u2194Q)"};
+    std::string conc {"P\u2194\uFFE2Q"};
 
     TruthTreeModel model {args, conc};
     model.printModel();
+
+    std::vector<std::string> decompose;
+    DecompositionUtil::decompose("\uFFE2(P\u2194Q)", &decompose);
+    for (auto &s: decompose) std::cout << s << "\n"; 
 
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
 
