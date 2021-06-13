@@ -48,10 +48,6 @@ bool TruthTreeGen::OnInit()
     TruthTreeModel model {args, conc};
     model.printModel();
 
-    std::vector<std::string> decompose;
-    DecompositionUtil::decompose("\uFFE2(P\u2194Q)", &decompose);
-    for (auto &s: decompose) std::cout << s << "\n"; 
-
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
 
     return true;
