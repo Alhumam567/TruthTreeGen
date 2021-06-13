@@ -157,21 +157,26 @@ bool DecompositionUtil::decompose(const std::string &statement, std::vector<std:
     return split;
 }
 
+/** Computes if statement is a literal by first checking if the main connective is either
+ *  negation or none, if its none then statement is guaranteed to be literal, if negation
+ *  check next character following negation is not an opening bracket.
+ */
 bool DecompositionUtil::isLiteral(const std::string &statement) 
 {
     std::string *mainConn = new std::string();
     DecompositionUtil::findMainConnective(statement, mainConn);
 
+    // Main connective is neither a negation or literal
     if (*mainConn != "\uFFE2" && *mainConn != "nuts") { 
         delete mainConn;
         return false; 
     }
 
     if (*mainConn == "\uFFE2") {
-        int i {0};
-        while ((statement.at(i) & 0x80) == 0x80) i++;
+        // int i {0};
+        // while ((statement.at(i) & 0x80) == 0x80) i++;
 
-        std::string innerStatement = statement.substr(i, statement.length()-1);
+        std::string innerStatement = statement.substr(3, statement.length()-3); // Ignore negation
 
         if (innerStatement[0] == '(') {
             delete mainConn;
@@ -224,7 +229,7 @@ int DecompositionUtil::findMainConnective(const std::string &statement, std::str
     bool isLogicalConn;
 
     // Loop over all bytes in the sequence of characters, there could be
-    // UTF-8 characters that take multiple bytes to represent
+    // UTF-8 characters that are variably lengthed
     for(std::size_t i = 0; i < statement.length(); i++){
         curr_pos = i;
         c = statement.at(i);
@@ -261,17 +266,23 @@ int DecompositionUtil::findMainConnective(const std::string &statement, std::str
     return pos;
 }
 
-DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(const std::string &conn) {
-    if (conn == "\uFFE2") return OP_PREC::NOT;
-    else if (conn == "\u2227") return OP_PREC::AND;
-    else if (conn == "\u2228") return OP_PREC::OR;
-    else if (conn == "\u2192") return OP_PREC::COND;
-    else if (conn == "\u2194") return OP_PREC::BICOND;
-    else if (conn == "\u2200") return OP_PREC::UNIVERSAL;
-    else if (conn == "\u2203") return OP_PREC::EXIST;
+/** Given a utf-8 string "character", if its a logical connection then it returns the connections
+ *  operator precedence, else OP_ERR
+ */
+DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(const std::string &utfc) {
+    if (utfc == "\uFFE2") return OP_PREC::NOT;
+    else if (utfc == "\u2227") return OP_PREC::AND;
+    else if (utfc == "\u2228") return OP_PREC::OR;
+    else if (utfc == "\u2192") return OP_PREC::COND;
+    else if (utfc == "\u2194") return OP_PREC::BICOND;
+    else if (utfc == "\u2200") return OP_PREC::UNIVERSAL;
+    else if (utfc == "\u2203") return OP_PREC::EXIST;
     else return OP_PREC::ERR;
 }
 
+/** Compares the precedence of two logical connectives and returns if the new connective precedence is 
+ *  higher than the old connective precedence. 
+ */
 bool DecompositionUtil::hasHigherPrecendence(const std::string &oldConn, const std::string &newConn) {
     if (oldConn == "not-found") return true;
 
