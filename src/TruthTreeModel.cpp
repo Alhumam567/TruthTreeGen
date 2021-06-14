@@ -314,6 +314,7 @@ bool TruthTreeModel::applyDecompositionRule(TruthTreeBranch *branch, const std::
                 lB = new TruthTreeBranch(lLines, cB);
                 rB = new TruthTreeBranch(rLines, cB);
                 i += 2;
+                
                 // Split the branch given the decomposition and set status of branch to intermediate
                 cB->leftBranch = lB;
                 cB->rightBranch = rB;

@@ -3,6 +3,7 @@
 #include <string>
 #include <regex>
 
+#include "Statement.h"
 #include "TruthTreeGen.h"
 #include "DecompositionUtil.h"
 
@@ -16,6 +17,32 @@ std::size_t DecompositionUtil::strlen_utf8(const std::string& str) {
 	return length;
 }
 
+/** Breaks down <statement> using its main connective and stores the resulting decomposition in <decomposedStatement>.
+ *  Returns whether the decomposition rule of the main connective branches:
+ *      Conj:          Neg Conj:
+ *       P^Q            ~(P^Q)
+ *        |              /   \
+ *        P             ~P   ~Q
+ *        Q  
+ * 
+ *      Disj:          Neg Disj:
+ *       PvQ            ~(PvQ)
+ *       / \               |
+ *      P   Q             ~P
+ *                        ~Q
+ *  
+ *      Cond:          Neg Cond:
+ *      P->Q            ~(P->Q)
+ *      /  \               |
+ *     ~P   Q              P
+ *                        ~Q
+ * 
+ *     Bicond:        Neg Bicond:
+ *      P<->Q          ~(P<->Q)
+ *      /   \            /   \
+ *      P   ~P           P   ~P
+ *      Q   ~Q          ~Q    Q
+ */ 
 bool DecompositionUtil::decompose(const std::string &statement, std::vector<std::string> *decomposedStatement)
 {
     bool split;
@@ -173,9 +200,6 @@ bool DecompositionUtil::isLiteral(const std::string &statement)
     }
 
     if (*mainConn == "\uFFE2") {
-        // int i {0};
-        // while ((statement.at(i) & 0x80) == 0x80) i++;
-
         std::string innerStatement = statement.substr(3, statement.length()-3); // Ignore negation
 
         if (innerStatement[0] == '(') {
@@ -195,7 +219,7 @@ bool DecompositionUtil::isNegations(const std::string &literal1, const std::stri
     DecompositionUtil::findMainConnective(literal2, mc2);
 
     if (*mc1 == "\uFFE2") return literal1.substr(3, literal1.length()) == literal2;
-    if (*mc2 == "\uFFE2") return literal2.substr(3, literal2.length()) == literal1;
+    else if (*mc2 == "\uFFE2") return literal2.substr(3, literal2.length()) == literal1;
     else return false;
 }
 
