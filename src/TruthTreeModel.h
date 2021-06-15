@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+#include "StatementUtil.h"
+
 /** A section of the truth tree containing all statements occurring after the end of previous 
  *  parent branch, up to but not including any children branches. This is not a full branch of 
  *  the truth tree, it only contains a section of a branch, but given a leaf branch you can trace 
@@ -20,18 +22,15 @@ public:
     Status status;
 
     //Public for testing purposes
-    std::vector<std::string> decomposedStatements;  // all statements that were broken down using their main connective rule
-    std::vector<std::string> openStatements;        // all statements yet to be broken down
+    std::vector<Statement> decomposedStatements;  // all statements that were broken down using their main connective rule
+    std::vector<Statement> openStatements;        // all statements yet to be broken down
 
-    TruthTreeBranch(const std::vector<std::string> &lines, TruthTreeBranch *parent); 
+    TruthTreeBranch(const std::vector<Statement> &lines, TruthTreeBranch *parent); 
 
     void printBranch();
-    Status update(const std::string &statement, const std::vector<std::string> &decomposition);
+    std::vector<std::string> update(const Statement &statement, const std::vector<Statement> &decomposition);
     Status evaluateBranch(const std::vector<std::string> &newLiterals);
-    TruthTreeBranch *popOpenStatement(std::string &string);
-
-private:
-    
+    TruthTreeBranch *popOpenStatement(Statement &string);
 };
 
 /** Entire truth tree held as a list of TruthTreeBranches. 
@@ -52,7 +51,7 @@ public:
     ~TruthTreeModel();
 
     int generateTree();
-    bool applyDecompositionRule(TruthTreeBranch *branch, const std::string &statement);
+    bool applyDecompositionRule(TruthTreeBranch *branch, const Statement &statement);
     void printModel();
 };
 

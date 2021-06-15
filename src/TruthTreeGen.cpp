@@ -6,7 +6,7 @@
 #include "TruthTreeGen.h"
 #include "TruthTreePane.h"
 #include "TruthTreeModel.h"
-#include "DecompositionUtil.h"
+#include "StatementUtil.h"
 
 std::string specialChars[9]{
     "\u2200", // Universal Quantifier
@@ -42,11 +42,40 @@ bool TruthTreeGen::OnInit()
     this->frame->Show(true); 
     this->textCtrlIsChanged = true;
 
-    std::vector<std::string> args {"\uFFE2(P\u2194Q)"};
-    std::string conc {"P\u2194\uFFE2Q"};
+    std::vector<std::string> args {"P\u2227Q"};
+    std::string conc {"P"};
 
-    TruthTreeModel model {args, conc};
-    model.printModel();
+    TruthTreeModel *model = new TruthTreeModel{args, conc};
+    model->printModel();
+    delete model;
+
+    // args = {"P\u2227Q"};
+    // conc = "Q";
+    
+    // model = new TruthTreeModel(args, conc);
+    // model->printModel();
+    // delete model;
+
+    // args = {"P\u2192Q", "P"};
+    // conc = "Q";
+
+    // model = new TruthTreeModel(args, conc);
+    // model->printModel();
+    // delete model;
+
+    // args = {"P\u2192Q", "\uFFE2Q"};
+    // conc = "\uFFE2P";
+
+    // model = new TruthTreeModel(args, conc);
+    // model->printModel();
+    // delete model;
+
+    // args = {"\uFFE2(P\u2194Q)"};
+    // conc = "P\u2194\uFFE2Q";
+
+    // model = new TruthTreeModel(args, conc);
+    // model->printModel();
+    // delete model;
 
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
 
