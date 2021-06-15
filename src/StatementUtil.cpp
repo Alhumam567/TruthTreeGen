@@ -91,107 +91,87 @@ bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statem
     }
     if (!noB) right = DecompositionUtil::initializeStatement(right.value.substr(1, right.value.length()-2));
 
-    bool decompose {true}, fNeg {false};
-
-    // Dum dum finite state automata
-    while (decompose) {
-        // Decomposing rules
-        switch (op) {
-            // Universal/Existential Case
-            case OP_PREC::UNIVERSAL: {
-                if (statement.mc == "\u2200") // Universal
-                {}
-                else                      // Existential
-                {}
-                break;
-            }
-            // And: Split conjuncts in same branch
-            case OP_PREC::AND: {
-                decomposedStatement->resize(2);
-
-                decomposedStatement->at(0) = left;
-                decomposedStatement->at(1) = right;
-
-                split = decompose = false;
-                break;
-            }
-            // Or: Split disjuncts into different branches
-            case OP_PREC::OR: {
-                decomposedStatement->resize(2);
-
-                decomposedStatement->at(0) = left;
-                decomposedStatement->at(1) = right;
-
-                split = true;
-                decompose = false;
-                break;
-            }
-            // Not: Depends on inner nested connective
-            case OP_PREC::NOT: {
-                // Check its not a literal
-                if (!DecompositionUtil::isLiteral(right)) {
-                    op = DecompositionUtil::getOperatorPrecendence(right.mc);
-                    
-                    left = DecompositionUtil::initializeStatement(right.value.substr(0, right.mc_pos));
-                    right =  DecompositionUtil::initializeStatement(right.value.substr(right.mc_pos+3, 
-                                                                                        right.value.length() - (right.mc_pos+3))); // start at pos+3 bc main connectives are 3 bytes long
-                    
-                    decompose = true;
-                    fNeg = true;
-                } else {}
-
-                break;
-            }
-            // Conditional/Biconditional case
-            case OP_PREC::COND: {
-                if (statement.mc == "\u2192") { // Conditional
-                    decomposedStatement->resize(2);
-
-                    decomposedStatement->at(0) = left;         // Negation of Antecedent
-                    addNegation(decomposedStatement->at(0));
-                    decomposedStatement->at(1) = right;        // Consequent
-                }
-                else {                       // Biconditional
-                    decomposedStatement->resize(4);
-                    
-                    // Both True
-                    decomposedStatement->at(0) = left;
-                    decomposedStatement->at(1) = right;  
-
-                    // Both False
-                    decomposedStatement->at(2) = left;
-                    addNegation(decomposedStatement->at(2));
-                    decomposedStatement->at(3) = right;   
-                    addNegation(decomposedStatement->at(3));   
-                }
-
-                split = true;
-                decompose = false;
-                break;
-            }
-            case OP_PREC::ERR: {
-                decompose = false;
-                break;
-            }
+    // Decomposing rules
+    switch (op) {
+        // Universal/Existential Case
+        case OP_PREC::UNIVERSAL: {
+            if (statement.mc == "\u2200") // Universal
+            {}
+            else                      // Existential
+            {}
+            break;
         }
-    }
+        // And: Split conjuncts in same branch
+        case OP_PREC::AND: {
+            decomposedStatement->resize(2);
 
-    // Cover negation:
-    if (fNeg) {
-        // Biconditional special case
-        if (op == OP_PREC::BICOND) { 
+            decomposedStatement->at(0) = left;
+            decomposedStatement->at(1) = right;
+
+            split = false;
+            break;
+        }
+        // Or: Split disjuncts into different branches
+        case OP_PREC::OR: {
+            decomposedStatement->resize(2);
+
+            decomposedStatement->at(0) = left;
+            decomposedStatement->at(1) = right;
+
             split = true;
-        
-            addNegation(decomposedStatement->at(1));
-            addNegation(decomposedStatement->at(3));
-        } else {
-            split = !split;
+            break;
+        }
+        // Not: Depends on inner nested connective
+        case OP_PREC::NOT: {
+            split = DecompositionUtil::decompose(right, decomposedStatement);
 
-            for (auto &ds : *decomposedStatement) {
-                // ds = std::string("\uFFE2").append(ds);
-                addNegation(ds);
+            // Biconditional special case
+            if (right.mc == "\u2194") { 
+                split = true;
+            
+                addNegation(decomposedStatement->at(1));
+                addNegation(decomposedStatement->at(3));
+            } else {
+                split = !split;
+
+                for (auto &ds : *decomposedStatement) {
+                    // ds = std::string("\uFFE2").append(ds);
+                    addNegation(ds);
+                }
             }
-        }   
+
+            break;
+        }
+        // Conditional/Biconditional case
+        case OP_PREC::COND: {
+            if (statement.mc == "\u2192") { // Conditional
+                decomposedStatement->resize(2);
+
+                decomposedStatement->at(0) = left;         // Negation of Antecedent
+                addNegation(decomposedStatement->at(0));
+                decomposedStatement->at(1) = right;        // Consequent
+            }
+            else {                       // Biconditional
+                decomposedStatement->resize(4);
+                
+                // Both True
+                decomposedStatement->at(0) = left;
+                decomposedStatement->at(1) = right;  
+
+                // Both False
+                decomposedStatement->at(2) = left;
+                addNegation(decomposedStatement->at(2));
+                decomposedStatement->at(3) = right;   
+                addNegation(decomposedStatement->at(3));   
+            }
+
+            split = true;
+            break;
+        }
+        case OP_PREC::ERR: {
+            break;
+        }
+        
     }
 
     return split;
