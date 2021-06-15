@@ -59,7 +59,6 @@ Statement DecompositionUtil::initializeStatement(const std::string &str) {
 bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statement> *decomposedStatement)
 {
     bool split;
-    // int pos = DecompositionUtil::findMainConnective(statement);
     OP_PREC op = DecompositionUtil::getOperatorPrecendence(statement.mc);
 
     Statement left {DecompositionUtil::initializeStatement(statement.value.substr(0, statement.mc_pos))};
@@ -76,14 +75,6 @@ bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statem
     }
 
     // Strip any unnecessary brackets
-    // DecompositionUtil::findMainConnective(left);
-    // if (left.length() > 0 && left.mc == "nuts" && left[0] == '(')
-    //     left = {left.substr(1, left.length()-2), left.mc, left.mc_pos};
-    
-    // DecompositionUtil::findMainConnective(right);
-    // if (right.mc == "nuts" && right.value.at(0) == '(') {
-    //     right = {right.value.substr(1, right.value.length()-2), right.mc, right.mc_pos };
-    // }
     int b {0};
     bool noB {left.value[0] != '('};
     for (int i {0}; i < left.value.length(); i++) {
@@ -139,11 +130,11 @@ bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statem
             case OP_PREC::NOT: {
                 // Check its not a literal
                 if (!DecompositionUtil::isLiteral(right)) {
-                    // pos = DecompositionUtil::findMainConnective(right);
                     op = DecompositionUtil::getOperatorPrecendence(right.mc);
                     
-                    left = {right.value.substr(0, right.mc_pos)};
-                    right = {right.value.substr(right.mc_pos+3, right.value.length() - (right.mc_pos+3))}; // start at pos+3 bc main connectives are 3 bytes long
+                    left = DecompositionUtil::initializeStatement(right.value.substr(0, right.mc_pos));
+                    right =  DecompositionUtil::initializeStatement(right.value.substr(right.mc_pos+3, 
+                                                                                        right.value.length() - (right.mc_pos+3))); // start at pos+3 bc main connectives are 3 bytes long
                     
                     decompose = true;
                     fNeg = true;
@@ -188,7 +179,7 @@ bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statem
     // Cover negation:
     if (fNeg) {
         // Biconditional special case
-        if (statement.mc == "\u2194") { 
+        if (op == OP_PREC::BICOND) { 
             split = true;
         
             addNegation(decomposedStatement->at(1));
@@ -258,7 +249,7 @@ void DecompositionUtil::addNegation(Statement &statement) {
         else 
             statement = {"\uFFE2(" + statement.value + ")", "\uFFE2", 0, false};
     } else {                                        // If literal
-        if (statement.value.substr(0, 3) == "\uFFE2")     // Check for existing neg
+        if (statement.mc == "\uFFE2")     // Check for existing neg
             statement = {statement.value.substr(3, statement.value.length() - 3), "", -1, true};
         else {
             statement = {"\uFFE2" + statement.value, "\uFFE2", 0, true};

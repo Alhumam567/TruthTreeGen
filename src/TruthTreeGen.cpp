@@ -46,21 +46,21 @@ bool TruthTreeGen::OnInit()
     std::string conc {"P"};
 
     TruthTreeModel *model = new TruthTreeModel{args, conc};
-    model->printModel();
-    delete model;
+    // model->printModel();
+    // delete model;
 
     // args = {"P\u2227Q"};
     // conc = "Q";
     
     // model = new TruthTreeModel(args, conc);
-    // model->printModel();
+    // // model->printModel();
     // delete model;
 
     // args = {"P\u2192Q", "P"};
     // conc = "Q";
 
     // model = new TruthTreeModel(args, conc);
-    // model->printModel();
+    // // model->printModel();
     // delete model;
 
     // args = {"P\u2192Q", "\uFFE2Q"};
@@ -70,12 +70,12 @@ bool TruthTreeGen::OnInit()
     // model->printModel();
     // delete model;
 
-    // args = {"\uFFE2(P\u2194Q)"};
-    // conc = "P\u2194\uFFE2Q";
+    args = {"\uFFE2(P\u2194Q)"};
+    conc = "P\u2194\uFFE2Q";
 
-    // model = new TruthTreeModel(args, conc);
-    // model->printModel();
-    // delete model;
+    model = new TruthTreeModel(args, conc);
+    model->printModel();
+    delete model;
 
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
 
