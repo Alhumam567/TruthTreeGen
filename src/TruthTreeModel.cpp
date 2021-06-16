@@ -15,8 +15,6 @@ TruthTreeBranch::TruthTreeBranch(const std::vector<Statement> &lines, TruthTreeB
     literals {}
 {
     for (auto &s : lines) {
-        // Statement statement {DecompositionUtil::initializeStatement(s)};
-
         if (s.isLiteral) 
             literals.push_back(s.value);
         else
@@ -37,17 +35,7 @@ std::vector<std::string> TruthTreeBranch::update(const Statement &statement, con
     std::vector<std::string> newLiterals {};
 
     // Adds any new statements to the branch
-    // for (auto &newS : decomposition) {
-    //     if (DecompositionUtil::isLiteral(newS)) { 
-    //         newLiterals.push_back(newS);
-    //         literals.push_back(newS);
-    //     }
-    //     else
-    //         openStatements.push_back(newS);
-    // }
     for (auto &s : decomposition) {
-        // Statement st {DecompositionUtil::initializeStatement(s)};
-
         if (s.isLiteral) {
             literals.push_back(s.value);
             newLiterals.push_back(s.value);
@@ -81,7 +69,7 @@ TruthTreeBranch::Status TruthTreeBranch::evaluateBranch(const std::vector<std::s
     while (currBranch != NULL) { // Loop over all TT segments
         for (int i {0}; i < newLiterals.size(); i++) { // Loop over all new literals
             for (int j {0}; j < currBranch->literals.size(); j++) { // Loop over all literals in currBranch
-                if (DecompositionUtil::isNegations(newLiterals[i], currBranch->literals[j])) {
+                if (StatementUtil::isNegations(newLiterals[i], currBranch->literals[j])) {
                     std::cout << "\t\t\tEvaluated branch: " << this << ", status: closed\n"; 
                     this->status = Status::CLOSED;
                     return this->status;
@@ -149,14 +137,14 @@ TruthTreeModel::TruthTreeModel(const std::vector<std::string> &premises, const s
     conclusion {conclusion},
     premises {premises}
 {
-    Statement negConc {DecompositionUtil::initializeStatement(conclusion)};
-    DecompositionUtil::addNegation(negConc);
+    Statement negConc {StatementUtil::initializeStatement(conclusion, true)};
+    StatementUtil::addNegation(negConc);
 
     // Create root branch with all premises and negation of the conclusion
     std::vector<Statement> allLines;
 
     for (auto &str : premises) 
-        allLines.push_back(DecompositionUtil::initializeStatement(str));
+        allLines.push_back(StatementUtil::initializeStatement(str, true));
     allLines.push_back(negConc);
 
     openBranches = { new TruthTreeBranch(allLines, NULL) }; 
@@ -227,9 +215,9 @@ int TruthTreeModel::generateTree() {
             std::cout << "\t\tStopped decomposing in currBranch: " << currBranch << "\n";
         }
 
-        if (currBranch->status == TruthTreeBranch::Status::COMPLETEOPEN) { std::cout << "\t\tStatus: copen\n";  this->completeOpenBranches.push_back(currBranch); }
-        else if (currBranch->status == TruthTreeBranch::Status::CLOSED) { std::cout << "\t\tStatus: closed\n";  this->closedBranches.push_back(currBranch); }
-        else { std::cout << "\t\tINT branch detected\n"; }
+        if (currBranch->status == TruthTreeBranch::Status::COMPLETEOPEN) { std::cout << "\t\tStatus: COpen\n";  this->completeOpenBranches.push_back(currBranch); }
+        else if (currBranch->status == TruthTreeBranch::Status::CLOSED) { std::cout << "\t\tStatus: Closed\n";  this->closedBranches.push_back(currBranch); }
+        else { std::cout << "\t\tStatus: INT\n"; }
     }
     
     this->complete = true;
@@ -299,7 +287,7 @@ bool TruthTreeModel::applyDecompositionRule(TruthTreeBranch *branch, const State
     std::vector<Statement> decomposition {};
 
     std::cout << "\t\t\tdecompose started on " << statement.value << " ...\n";
-    bool split = DecompositionUtil::decompose(statement, &decomposition);
+    bool split = StatementUtil::decompose(statement, &decomposition);
     std::cout << "\t\t\tdecompose done on " << statement.value << " ...\n";
 
     // Decomposition caused split in branch

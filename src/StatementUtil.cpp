@@ -6,7 +6,7 @@
 #include "TruthTreeGen.h"
 #include "StatementUtil.h"
 
-std::size_t DecompositionUtil::strlen_utf8(const std::string& str) {
+std::size_t StatementUtil::strlen_utf8(const std::string& str) {
 	std::size_t length = 0;
 	for (char c : str) {
 		if ((c & 0xC0) != 0x80) {
@@ -16,16 +16,18 @@ std::size_t DecompositionUtil::strlen_utf8(const std::string& str) {
 	return length;
 }
 
-Statement DecompositionUtil::initializeStatement(const std::string &str) {
+Statement StatementUtil::initializeStatement(const std::string &str, bool verbose) {
     Statement s {str};
 
-    DecompositionUtil::findMainConnective(s);
-    DecompositionUtil::isLiteral(s);
+    StatementUtil::findMainConnective(s);
+    StatementUtil::isLiteral(s);
 
-    std::cout << "Initializing statement: " << str << "\n";
-    std::cout << "\t mc: " << s.mc << "\n";
-    std::cout << "\t mc_pos: " << s.mc_pos << "\n";
-    std::cout << "\t isLiteral: " << s.isLiteral << "\n";
+    if (verbose) {
+        std::cout << "Initializing statement: " << str << "\n";
+        std::cout << "\t mc: " << s.mc << "\n";
+        std::cout << "\t mc_pos: " << s.mc_pos << "\n";
+        std::cout << "\t isLiteral: " << s.isLiteral << "\n";
+    }
 
     return s;
 }
@@ -56,14 +58,14 @@ Statement DecompositionUtil::initializeStatement(const std::string &str) {
  *      P   ~P           P   ~P
  *      Q   ~Q          ~Q    Q
  */ 
-bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statement> *decomposedStatement)
+bool StatementUtil::decompose(const Statement &statement, std::vector<Statement> *decomposedStatement)
 {
     bool split;
-    OP_PREC op = DecompositionUtil::getOperatorPrecendence(statement.mc);
+    OP_PREC op = StatementUtil::getOperatorPrecendence(statement.mc);
 
-    Statement left {DecompositionUtil::initializeStatement(statement.value.substr(0, statement.mc_pos))};
-    Statement right {DecompositionUtil::initializeStatement(statement.value.substr(statement.mc_pos+3, 
-                                                                                    statement.value.length() - (statement.mc_pos+3)))}; // start at pos+3 bc main connectives are 3 bytes long
+    Statement left {StatementUtil::initializeStatement(statement.value.substr(0, statement.mc_pos), true)};
+    Statement right {StatementUtil::initializeStatement(statement.value.substr(statement.mc_pos+3, 
+                                                                                    statement.value.length() - (statement.mc_pos+3)), true)}; // start at pos+3 bc main connectives are 3 bytes long
 
     // (Some) Invalid statement cases:
     //      - Left is empty string even though mainconnective is not negation
@@ -82,14 +84,16 @@ bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statem
         else if (left.value[i] == ')') b--;
         if (b == 0 && i < left.value.length() - 1) { noB = true; break; }
     }
-    if (!noB) left = DecompositionUtil::initializeStatement(left.value.substr(1, left.value.length()-2));
+    if (!noB) left = StatementUtil::initializeStatement(left.value.substr(1, left.value.length()-2),
+                                                            true);
     b = 0; noB = right.value[0] != '(';
     for (int i {0}; i < right.value.length(); i++) {
         if (right.value[i] == '(') b++;
         else if (right.value[i] == ')') b--;
         if (b == 0 && i < right.value.length() - 1) { noB = true; break; }
     }
-    if (!noB) right = DecompositionUtil::initializeStatement(right.value.substr(1, right.value.length()-2));
+    if (!noB) right = StatementUtil::initializeStatement(right.value.substr(1, right.value.length()-2), 
+                                                             true);
 
     // Decomposing rules
     switch (op) {
@@ -123,7 +127,7 @@ bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statem
         }
         // Not: Depends on inner nested connective
         case OP_PREC::NOT: {
-            split = DecompositionUtil::decompose(right, decomposedStatement);
+            split = StatementUtil::decompose(right, decomposedStatement);
 
             // Biconditional special case
             if (right.mc == "\u2194") { 
@@ -171,7 +175,6 @@ bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statem
         case OP_PREC::ERR: {
             break;
         }
-        
     }
 
     return split;
@@ -181,7 +184,7 @@ bool DecompositionUtil::decompose(const Statement &statement, std::vector<Statem
  *  negation or none, if its none then statement is guaranteed to be literal, if negation
  *  check next character following negation is not an opening bracket.
  */
-bool DecompositionUtil::isLiteral(Statement &statement) 
+bool StatementUtil::isLiteral(Statement &statement) 
 {
     // Main connective is neither a negation or literal
     if (statement.mc != "\uFFE2" && statement.mc != "") { 
@@ -202,18 +205,8 @@ bool DecompositionUtil::isLiteral(Statement &statement)
     return true;
 }
 
-// /** Assumes inputs are literals, simply checks if they are negations of each other */
-// bool DecompositionUtil::isNegations(const Statement &literal1, const Statement &literal2) {
-//     DecompositionUtil::findMainConnective(literal1);
-//     DecompositionUtil::findMainConnective(literal2);
-
-//     if (literal1.mc == "\uFFE2") return literal1.value.substr(3, literal1.value.length()) == literal2.value;
-//     else if (literal2.mc == "\uFFE2") return literal2.value.substr(3, literal2.value.length()) == literal1.value;
-//     else return false;
-// }
-
 /** Assumes inputs are literals, simply checks if they are negations of each other */
-bool DecompositionUtil::isNegations(const std::string &literal1, const std::string &literal2) {
+bool StatementUtil::isNegations(const std::string &literal1, const std::string &literal2) {
     if (literal1.substr(0, 3) == "\uFFE2") return literal1.substr(3, literal1.length()) == literal2;
     else if (literal2.substr(0, 3) == "\uFFE2") return literal2.substr(3, literal2.length()) == literal1;
     else return false;
@@ -222,10 +215,11 @@ bool DecompositionUtil::isNegations(const std::string &literal1, const std::stri
 /** This function adds negations to any kind of statement. If a double negation is be created
  *  then the statement will be automatically decomposed to remove the negation. 
  */
-void DecompositionUtil::addNegation(Statement &statement) {
+void StatementUtil::addNegation(Statement &statement) {
     if (!statement.isLiteral) { // If compound
         if (statement.mc == "\uFFE2")
-            statement = DecompositionUtil::initializeStatement(statement.value.substr(4, statement.value.length() - 4 - 1)); // Skip neg and opening bracket, don't include outer bracket
+            statement = StatementUtil::initializeStatement(statement.value.substr(4, statement.value.length() - 4 - 1),
+                                                                                      true); // Skip neg and opening bracket, don't include outer bracket
         else 
             statement = {"\uFFE2(" + statement.value + ")", "\uFFE2", 0, false};
     } else {                                        // If literal
@@ -237,7 +231,7 @@ void DecompositionUtil::addNegation(Statement &statement) {
     }
 }
 
-int DecompositionUtil::findMainConnective(Statement &statement)
+int StatementUtil::findMainConnective(Statement &statement)
 {
     int bracket_c {0}, curr_pos {-1};
     char c;
@@ -263,7 +257,7 @@ int DecompositionUtil::findMainConnective(Statement &statement)
             }
             i--;
 
-            if (DecompositionUtil::getOperatorPrecendence(utf8_c) != OP_PREC::ERR) 
+            if (StatementUtil::getOperatorPrecendence(utf8_c) != OP_PREC::ERR) 
                 isLogicalConn = true;
 		}
 
@@ -272,7 +266,7 @@ int DecompositionUtil::findMainConnective(Statement &statement)
         } else if (utf8_c == ")") {
             bracket_c--;
         } else if (isLogicalConn && bracket_c == 0) {
-            if (DecompositionUtil::hasHigherPrecendence(statement.mc, utf8_c)) {
+            if (StatementUtil::hasHigherPrecendence(statement.mc, utf8_c)) {
                 statement.mc_pos = curr_pos;
                 statement.mc = utf8_c;
             }
@@ -285,7 +279,7 @@ int DecompositionUtil::findMainConnective(Statement &statement)
 /** Given a utf-8 string "character", if its a logical connection then it returns the connections
  *  operator precedence, else OP_ERR
  */
-DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(const std::string &utfc) {
+StatementUtil::OP_PREC StatementUtil::getOperatorPrecendence(const std::string &utfc) {
     if (utfc == "\uFFE2") return OP_PREC::NOT;
     else if (utfc == "\u2227") return OP_PREC::AND;
     else if (utfc == "\u2228") return OP_PREC::OR;
@@ -299,11 +293,11 @@ DecompositionUtil::OP_PREC DecompositionUtil::getOperatorPrecendence(const std::
 /** Compares the precedence of two logical connectives and returns if the new connective precedence is 
  *  higher than the old connective precedence. 
  */
-bool DecompositionUtil::hasHigherPrecendence(const std::string &oldConn, const std::string &newConn) {
+bool StatementUtil::hasHigherPrecendence(const std::string &oldConn, const std::string &newConn) {
     if (oldConn == "not-found") return true;
 
-    OP_PREC oldP {DecompositionUtil::getOperatorPrecendence(oldConn)};
-    OP_PREC newP {DecompositionUtil::getOperatorPrecendence(newConn)};
+    OP_PREC oldP {StatementUtil::getOperatorPrecendence(oldConn)};
+    OP_PREC newP {StatementUtil::getOperatorPrecendence(newConn)};
     
     return oldP < newP;
 }

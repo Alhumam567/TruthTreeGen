@@ -12,7 +12,7 @@ struct Statement {
     bool isLiteral; 
 };
 
-class DecompositionUtil
+class StatementUtil
 {
     enum class OP_PREC{ UNIVERSAL=0, EXIST=0, NOT=1, AND=2, OR=3, COND=4, BICOND=4, ERR=-1 };
 
@@ -22,7 +22,7 @@ private:
     static int findMainConnective(Statement &statement);
 
 public:
-    static Statement initializeStatement(const std::string &str);
+    static Statement initializeStatement(const std::string &str, bool verbose);
     static bool decompose(const Statement &statement, std::vector<Statement> *decomposedStatement);
     static void addNegation(Statement &statement);
     static bool isLiteral(Statement &statement); 

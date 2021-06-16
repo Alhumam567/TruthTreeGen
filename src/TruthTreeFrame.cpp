@@ -48,7 +48,7 @@ TruthTreeFrame::TruthTreeFrame() :
     TruthTreePane* my_image = new TruthTreePane(this, wxID_ANY);
     mainSizer->Add(my_image, 1, wxEXPAND);
 
-    Bind(wxEVT_BUTTON, TruthTreeFrame::generateTree, this, 1);
+    Bind(wxEVT_BUTTON, TruthTreeFrame::generateTree, this, 1, 1);
 
     this->SetSizer(mainSizer);
     this->Show();

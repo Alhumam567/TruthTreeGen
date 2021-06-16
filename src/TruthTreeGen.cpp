@@ -47,7 +47,7 @@ bool TruthTreeGen::OnInit()
 
     TruthTreeModel *model = new TruthTreeModel{args, conc};
     // model->printModel();
-    // delete model;
+    delete model;
 
     // args = {"P\u2227Q"};
     // conc = "Q";
@@ -74,7 +74,7 @@ bool TruthTreeGen::OnInit()
     conc = "P\u2194\uFFE2Q";
 
     model = new TruthTreeModel(args, conc);
-    model->printModel();
+    // model->printModel();
     delete model;
 
     Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
