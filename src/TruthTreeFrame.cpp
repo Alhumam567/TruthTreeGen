@@ -6,6 +6,7 @@
 
 #include "TruthTreeGen.h"
 #include "TruthTreePane.h"
+#include "TruthTreeModel.h"
 
 TruthTreeFrame::TruthTreeFrame() : 
     wxFrame((wxFrame *)NULL, -1,  wxT("Truth Tree Generator"), wxPoint(100,50), wxSize(650,650)),
@@ -58,6 +59,21 @@ void TruthTreeFrame::generateTree(wxCommandEvent &ce)
 {
     std::cout << "Arguments: " << this->argCtrl->GetValue() << "\n";
     std::cout << "Conc: " << this->concCtrl->GetValue() << "\n";
+
+    std::string argString = std::string(this->argCtrl->GetValue().ToUTF8());
+    std::vector <std::string> args;
+    std::stringstream check1(argString);
+      
+    std::string intermediate;
+      
+    // Tokenizing w.r.t. space ' '
+    while(getline(check1, intermediate, ','))
+    {
+        args.push_back(intermediate);
+    }
+    
+    TruthTreeModel m {args, std::string(this->concCtrl->GetValue().mb_str())};
+    m.printModel();
 }
 
 bool TruthTreeFrame::isTextCtrl(wxObject *obj) 

@@ -1,7 +1,6 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#include <iostream>
 #include "TruthTreeFrame.h"
 
 extern std::string specialChars[9];
