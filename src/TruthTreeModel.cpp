@@ -165,7 +165,7 @@ TruthTreeModel::~TruthTreeModel() {
 
     while (!upperBranches.empty() || !currBranches.empty()) { // While there are still TTB pointers
         for (int i {0}; i < currBranches.size(); i++) {
-            if (currBranches[i]->parentBranch != NULL && // If upper segment was already deleted
+            if (currBranches[i]->parentBranch != NULL &&                                                    // If upper segment was already deleted
                 std::count(currBranches.begin(), currBranches.end(), currBranches[i]->parentBranch) == 0 && // If its about to be deleted this loop
                 std::count(upperBranches.begin(), upperBranches.end(), currBranches[i]->parentBranch) == 0) // If its already appended to next deletion list
                 upperBranches.push_back(currBranches[i]->parentBranch);

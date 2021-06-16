@@ -1,9 +1,10 @@
+#ifndef TTF_H 
+#define TTF_H
+
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
 
-#ifndef TTF_H 
-#define TTF_H
 
 class SymbolButton: public wxButton 
 {
@@ -15,6 +16,7 @@ public:
 
     void handleClick(wxCommandEvent &ce);
 };
+
 
 class TruthTreeFrame: public wxFrame 
 {
@@ -38,5 +40,6 @@ public:
 
     void generateTree(wxCommandEvent &ce);
 };
+
 
 #endif

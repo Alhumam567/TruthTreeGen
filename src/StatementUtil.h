@@ -1,9 +1,9 @@
+#ifndef UTIL_H
+#define UTIL_H
+
 #ifndef REGEX_H
     #include <regex>
 #endif
-
-#ifndef UTIL_H
-#define UTIL_H
 
 struct Statement {
     std::string value;              // The statement string

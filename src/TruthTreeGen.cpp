@@ -6,7 +6,6 @@
 #include "TruthTreeGen.h"
 #include "TruthTreePane.h"
 #include "TruthTreeModel.h"
-#include "StatementUtil.h"
 
 std::string specialChars[9]{
     "\u2200", // Universal Quantifier
@@ -48,27 +47,6 @@ bool TruthTreeGen::OnInit()
     TruthTreeModel *model = new TruthTreeModel{args, conc};
     // model->printModel();
     delete model;
-
-    // args = {"P\u2227Q"};
-    // conc = "Q";
-    
-    // model = new TruthTreeModel(args, conc);
-    // // model->printModel();
-    // delete model;
-
-    // args = {"P\u2192Q", "P"};
-    // conc = "Q";
-
-    // model = new TruthTreeModel(args, conc);
-    // // model->printModel();
-    // delete model;
-
-    // args = {"P\u2192Q", "\uFFE2Q"};
-    // conc = "\uFFE2P";
-
-    // model = new TruthTreeModel(args, conc);
-    // model->printModel();
-    // delete model;
 
     args = {"\uFFE2(P\u2194Q)"};
     conc = "P\u2194\uFFE2Q";
