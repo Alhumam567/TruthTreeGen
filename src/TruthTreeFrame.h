@@ -33,9 +33,6 @@ public:
 
     void handleTxtCtrl(wxFocusEvent &fe);
     void handleCharBtn(wxFocusEvent &fe);
-    void updateTxtCtrlCursorPosition();
-
-    bool isSpecialCharBtn(wxObject *obj);
 
     void generateTree(wxCommandEvent &ce);
 };

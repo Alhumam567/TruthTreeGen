@@ -39,7 +39,6 @@ TruthTreeFrame::TruthTreeFrame() :
     for (auto &btn : charBtns) {
         wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
         btn = new SymbolButton(this, i + 2, mystring, currCtrl, lastCursorPosition);
-        btn->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleCharBtn, this);
     }
     for (int i = 0; i<9; i++) 
         btnSizer->Add(charBtns[i], 0, wxALL, 2);
@@ -94,28 +93,13 @@ void TruthTreeFrame::handleCharBtn(wxFocusEvent &fe) {
     fe.Skip();
 }
 
-bool TruthTreeFrame::isSpecialCharBtn(wxObject *obj) 
-{
-    for (auto &x : this->charBtns) {
-        if (obj == x)
-            return true;
-    }
-    
-    return false;
-}
-
-void TruthTreeFrame::updateTxtCtrlCursorPosition() 
-{
-    std::cout << currCtrl->GetInsertionPoint() << "\n";
-    this->lastCursorPosition = currCtrl->GetInsertionPoint();
-}
-
 SymbolButton::SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextCtrl *&cCtrl, long &cp) : 
     wxButton(frame, id, specialChar, wxDefaultPosition, wxSize(20,20)),
     currCtrl {cCtrl},
     lastCursorPosition {cp}
 {
-    Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
+    this->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleCharBtn, (TruthTreeFrame *) frame);
+    this->Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
     std::cout << "Char: " << specialChar << " initialized with id: " << id << "\n";
 }
 
