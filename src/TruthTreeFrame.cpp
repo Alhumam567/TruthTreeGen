@@ -10,12 +10,12 @@
 
 TruthTreeFrame::TruthTreeFrame() : 
     wxFrame((wxFrame *)NULL, -1,  wxT("Truth Tree Generator"), wxPoint(100,50), wxSize(650,650)),
-    argCtrl {new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(350,20))},
-    concCtrl {new wxTextCtrl(this, -1, "", wxDefaultPosition, wxSize(200,20))},
+    argCtrl {new wxTextCtrl(this, 0, "", wxDefaultPosition, wxSize(350,20))},
+    concCtrl {new wxTextCtrl(this, 1, "", wxDefaultPosition, wxSize(200,20))},
     currCtrl {argCtrl},
     charBtns {},
     lastCursorPosition {},
-    generateTreeBtn {this, 1}
+    generateTreeBtn {this, 2}
 {
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -38,7 +38,8 @@ TruthTreeFrame::TruthTreeFrame() :
     int i = 0;
     for (auto &btn : charBtns) {
         wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
-        btn = new SymbolButton(this, mystring, concCtrl, currCtrl, lastCursorPosition);
+        btn = new SymbolButton(this, i + 2, mystring, currCtrl, lastCursorPosition);
+        btn->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleCharBtn, this);
     }
     for (int i = 0; i<9; i++) 
         btnSizer->Add(charBtns[i], 0, wxALL, 2);
@@ -49,7 +50,9 @@ TruthTreeFrame::TruthTreeFrame() :
     TruthTreePane* my_image = new TruthTreePane(this, wxID_ANY);
     mainSizer->Add(my_image, 1, wxEXPAND);
 
-    Bind(wxEVT_BUTTON, TruthTreeFrame::generateTree, this, 1, 1);
+    argCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrl, this);
+    concCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrl, this);
+    Bind(wxEVT_BUTTON, TruthTreeFrame::generateTree, this, 2);
 
     this->SetSizer(mainSizer);
     this->Show();
@@ -66,7 +69,7 @@ void TruthTreeFrame::generateTree(wxCommandEvent &ce)
       
     std::string intermediate;
       
-    // Tokenizing w.r.t. space ' '
+    // Tokenizing w.r.t. space
     while(getline(check1, intermediate, ','))
     {
         args.push_back(intermediate);
@@ -76,9 +79,19 @@ void TruthTreeFrame::generateTree(wxCommandEvent &ce)
     m.printModel();
 }
 
-bool TruthTreeFrame::isTextCtrl(wxObject *obj) 
-{
-    return obj == argCtrl || obj == concCtrl;
+void TruthTreeFrame::handleTxtCtrl(wxFocusEvent &fe) {
+    wxObject *focusObj = fe.GetEventObject();
+    this->currCtrl = (wxTextCtrl *) focusObj;
+    std::cout << "Switched to: " << focusObj << "\n";
+
+    fe.Skip();
+}
+
+void TruthTreeFrame::handleCharBtn(wxFocusEvent &fe) {
+    this->lastCursorPosition = currCtrl->GetInsertionPoint();
+    std::cout << "Insertion Point: " << lastCursorPosition << "\n";
+    
+    fe.Skip();
 }
 
 bool TruthTreeFrame::isSpecialCharBtn(wxObject *obj) 
@@ -91,35 +104,27 @@ bool TruthTreeFrame::isSpecialCharBtn(wxObject *obj)
     return false;
 }
 
-wxTextCtrl *TruthTreeFrame::getCurrCtrl() 
-{
-    return this->currCtrl;
-}
-
-void TruthTreeFrame::setCurrCtrl(wxTextCtrl *txt) 
-{
-    this->currCtrl = txt;
-}
-
 void TruthTreeFrame::updateTxtCtrlCursorPosition() 
 {
     std::cout << currCtrl->GetInsertionPoint() << "\n";
     this->lastCursorPosition = currCtrl->GetInsertionPoint();
 }
 
-SymbolButton::SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt, wxTextCtrl *&cCtrl, long &cp) : 
-    wxButton(frame, wxID_ANY, specialChar, wxDefaultPosition, wxSize(20,20)),
+SymbolButton::SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextCtrl *&cCtrl, long &cp) : 
+    wxButton(frame, id, specialChar, wxDefaultPosition, wxSize(20,20)),
     currCtrl {cCtrl},
     lastCursorPosition {cp}
 {
     Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
-    std::cout << "Char: " << specialChar << " initialized\n";
+    std::cout << "Char: " << specialChar << " initialized with id: " << id << "\n";
 }
 
 void SymbolButton::handleClick(wxCommandEvent &ce) 
 {
     this->currCtrl->SetValue(this->currCtrl->GetValue().insert(this->lastCursorPosition, this->GetLabel()));
-    this->lastCursorPosition++;
+    // this->lastCursorPosition++;
+    currCtrl->SetFocus();
+    currCtrl->SetInsertionPoint(++lastCursorPosition);
 
     std::cout << "Clicked " + this->GetLabel() + "\n";
 }

@@ -12,7 +12,7 @@ class SymbolButton: public wxButton
     long &lastCursorPosition;
 
 public:
-    SymbolButton(wxFrame *frame, wxString specialChar, wxTextCtrl *txt, wxTextCtrl *&currCtrl, long &cp);
+    SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextCtrl *&currCtrl, long &cp);
 
     void handleClick(wxCommandEvent &ce);
 };
@@ -31,11 +31,10 @@ class TruthTreeFrame: public wxFrame
 public:
     TruthTreeFrame();
 
-    wxTextCtrl *getCurrCtrl();
-    void setCurrCtrl(wxTextCtrl *txt);
+    void handleTxtCtrl(wxFocusEvent &fe);
+    void handleCharBtn(wxFocusEvent &fe);
     void updateTxtCtrlCursorPosition();
 
-    bool isTextCtrl(wxObject *obj);
     bool isSpecialCharBtn(wxObject *obj);
 
     void generateTree(wxCommandEvent &ce);

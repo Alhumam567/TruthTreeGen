@@ -12,7 +12,6 @@ class TruthTreeGen: public wxApp
 
 public:
     bool OnInit();
-    void handleTxtCtrl(wxFocusEvent &fe);
 };
 
 #endif

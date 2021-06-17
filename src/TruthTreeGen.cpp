@@ -19,21 +19,6 @@ std::string specialChars[9]{
     "\u2260", // Inequality
 };
 
-void TruthTreeGen::handleTxtCtrl(wxFocusEvent &fe) 
-{
-    wxObject *focusObj = fe.GetEventObject();
-
-    if (this->frame->isTextCtrl(focusObj)) {
-        this->textCtrlIsChanged = true;
-        this->frame->setCurrCtrl((wxTextCtrl *) focusObj);
-    }
-    else if (this->textCtrlIsChanged && this->frame->isSpecialCharBtn(focusObj)) {
-        this->textCtrlIsChanged = false;
-        this->frame->updateTxtCtrlCursorPosition();
-    }
-    
-    fe.Skip();
-}
 
 bool TruthTreeGen::OnInit()
 {
@@ -55,7 +40,7 @@ bool TruthTreeGen::OnInit()
     // model->printModel();
     delete model;
 
-    Bind(wxEVT_SET_FOCUS, TruthTreeGen::handleTxtCtrl, this);
+    // Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrl, this->frame);
 
     return true;
 }
