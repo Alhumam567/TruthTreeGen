@@ -98,15 +98,15 @@ SymbolButton::SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextC
     currCtrl {cCtrl},
     lastCursorPosition {cp}
 {
-    this->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleCharBtn, (TruthTreeFrame *) frame);
     this->Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
     std::cout << "Char: " << specialChar << " initialized with id: " << id << "\n";
 }
 
 void SymbolButton::handleClick(wxCommandEvent &ce) 
 {
+    this->lastCursorPosition = currCtrl->GetInsertionPoint();
     this->currCtrl->SetValue(this->currCtrl->GetValue().insert(this->lastCursorPosition, this->GetLabel()));
-    // this->lastCursorPosition++;
+    
     currCtrl->SetFocus();
     currCtrl->SetInsertionPoint(++lastCursorPosition);
 
