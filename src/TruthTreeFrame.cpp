@@ -69,10 +69,7 @@ void TruthTreeFrame::generateTree(wxCommandEvent &ce)
     std::string intermediate;
       
     // Tokenizing w.r.t. space
-    while(getline(check1, intermediate, ','))
-    {
-        args.push_back(intermediate);
-    }
+    while(getline(check1, intermediate, ',')) args.push_back(intermediate);
     
     TruthTreeModel m {args, std::string(this->concCtrl->GetValue().ToUTF8())};
     m.printModel();
@@ -86,12 +83,6 @@ void TruthTreeFrame::handleTxtCtrl(wxFocusEvent &fe) {
     fe.Skip();
 }
 
-void TruthTreeFrame::handleCharBtn(wxFocusEvent &fe) {
-    this->lastCursorPosition = currCtrl->GetInsertionPoint();
-    std::cout << "Insertion Point: " << lastCursorPosition << "\n";
-    
-    fe.Skip();
-}
 
 SymbolButton::SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextCtrl *&cCtrl, long &cp) : 
     wxButton(frame, id, specialChar, wxDefaultPosition, wxSize(20,20)),

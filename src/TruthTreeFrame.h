@@ -32,8 +32,6 @@ public:
     TruthTreeFrame();
 
     void handleTxtCtrl(wxFocusEvent &fe);
-    void handleCharBtn(wxFocusEvent &fe);
-
     void generateTree(wxCommandEvent &ce);
 };
 
