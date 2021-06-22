@@ -51,7 +51,7 @@ TruthTreeFrame::TruthTreeFrame() :
 
     argCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrl, this);
     concCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrl, this);
-    Bind(wxEVT_BUTTON, TruthTreeFrame::generateTree, this, 2);
+    generateTreeBtn.Bind(wxEVT_BUTTON, TruthTreeFrame::generateTree, this);
 
     this->SetSizer(mainSizer);
     this->Show();
@@ -74,7 +74,7 @@ void TruthTreeFrame::generateTree(wxCommandEvent &ce)
         args.push_back(intermediate);
     }
     
-    TruthTreeModel m {args, std::string(this->concCtrl->GetValue().mb_str())};
+    TruthTreeModel m {args, std::string(this->concCtrl->GetValue().ToUTF8())};
     m.printModel();
 }
 
