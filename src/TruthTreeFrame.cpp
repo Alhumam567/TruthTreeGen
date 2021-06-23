@@ -39,6 +39,7 @@ TruthTreeFrame::TruthTreeFrame() :
     for (auto &btn : charBtns) {
         wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
         btn = new SymbolButton(this, i + 2, mystring, currCtrl, lastCursorPosition);
+        // btn->Bind(wxEVT_BUTTON, TruthTreeFrame::handleSymbolButton, this);
     }
     for (int i = 0; i<9; i++) 
         btnSizer->Add(charBtns[i], 0, wxALL, 2);
@@ -49,15 +50,16 @@ TruthTreeFrame::TruthTreeFrame() :
     TruthTreePane* my_image = new TruthTreePane(this, wxID_ANY);
     mainSizer->Add(my_image, 1, wxEXPAND);
 
-    argCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrl, this);
-    concCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrl, this);
-    generateTreeBtn.Bind(wxEVT_BUTTON, TruthTreeFrame::generateTree, this);
+    argCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrlSwitch, this);
+    concCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrlSwitch, this);
+    generateTreeBtn.Bind(wxEVT_BUTTON, TruthTreeFrame::handleGenerateTree, this);
+    Bind(wxEVT_BUTTON, &TruthTreeFrame::handleSymbolButton, this, 3, 11);
 
     this->SetSizer(mainSizer);
     this->Show();
 }
 
-void TruthTreeFrame::generateTree(wxCommandEvent &ce)
+void TruthTreeFrame::handleGenerateTree(wxCommandEvent &ce)
 {
     std::cout << "Arguments: " << this->argCtrl->GetValue() << "\n";
     std::cout << "Conc: " << this->concCtrl->GetValue() << "\n";
@@ -75,12 +77,25 @@ void TruthTreeFrame::generateTree(wxCommandEvent &ce)
     m.printModel();
 }
 
-void TruthTreeFrame::handleTxtCtrl(wxFocusEvent &fe) {
+void TruthTreeFrame::handleTxtCtrlSwitch(wxFocusEvent &fe) {
     wxObject *focusObj = fe.GetEventObject();
     this->currCtrl = (wxTextCtrl *) focusObj;
     std::cout << "Switched to: " << focusObj << "\n";
 
     fe.Skip();
+}
+
+void TruthTreeFrame::handleSymbolButton(wxCommandEvent &ce) {
+    wxObject *o = ce.GetEventObject();
+    SymbolButton *sb = (SymbolButton *) o;
+
+    std::cout << "Bressed: " << sb->GetLabel() << "\n";
+
+    this->lastCursorPosition = currCtrl->GetInsertionPoint();
+    this->currCtrl->SetValue(this->currCtrl->GetValue().insert(this->lastCursorPosition, sb->GetLabel()));
+    
+    currCtrl->SetFocus();
+    currCtrl->SetInsertionPoint(++lastCursorPosition);
 }
 
 
@@ -89,17 +104,8 @@ SymbolButton::SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextC
     currCtrl {cCtrl},
     lastCursorPosition {cp}
 {
-    this->Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
+    // this->Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
     std::cout << "Char: " << specialChar << " initialized with id: " << id << "\n";
 }
 
-void SymbolButton::handleClick(wxCommandEvent &ce) 
-{
-    this->lastCursorPosition = currCtrl->GetInsertionPoint();
-    this->currCtrl->SetValue(this->currCtrl->GetValue().insert(this->lastCursorPosition, this->GetLabel()));
-    
-    currCtrl->SetFocus();
-    currCtrl->SetInsertionPoint(++lastCursorPosition);
-
-    std::cout << "Clicked " + this->GetLabel() + "\n";
-}
+void SymbolButton::handleClick(wxCommandEvent &ce) { }

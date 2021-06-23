@@ -31,8 +31,9 @@ class TruthTreeFrame: public wxFrame
 public:
     TruthTreeFrame();
 
-    void handleTxtCtrl(wxFocusEvent &fe);
-    void generateTree(wxCommandEvent &ce);
+    void handleTxtCtrlSwitch(wxFocusEvent &fe);
+    void handleSymbolButton(wxCommandEvent &ce);
+    void handleGenerateTree(wxCommandEvent &ce);
 };
 
 
