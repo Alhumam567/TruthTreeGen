@@ -6,16 +6,16 @@
 #endif
 
 
-class SymbolButton: public wxButton 
-{
-    wxTextCtrl *&currCtrl;
-    long &lastCursorPosition;
+// class SymbolButton: public wxButton 
+// {
+//     wxTextCtrl *&currCtrl;
+//     long &lastCursorPosition;
 
-public:
-    SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextCtrl *&currCtrl, long &cp);
+// public:
+//     SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextCtrl *&currCtrl, long &cp);
 
-    void handleClick(wxCommandEvent &ce);
-};
+//     void handleClick(wxCommandEvent &ce);
+// };
 
 
 class TruthTreeFrame: public wxFrame 
@@ -23,7 +23,7 @@ class TruthTreeFrame: public wxFrame
     wxTextCtrl *argCtrl, *concCtrl;
     wxTextCtrl *currCtrl;
 
-    SymbolButton* charBtns[9];
+    wxButton* charBtns[9];
     long lastCursorPosition;
 
     wxButton generateTreeBtn;

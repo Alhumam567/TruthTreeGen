@@ -38,8 +38,8 @@ TruthTreeFrame::TruthTreeFrame() :
     int i = 0;
     for (auto &btn : charBtns) {
         wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
-        btn = new SymbolButton(this, i + 2, mystring, currCtrl, lastCursorPosition);
-        // btn->Bind(wxEVT_BUTTON, TruthTreeFrame::handleSymbolButton, this);
+        // btn = new SymbolButton(this, i + 2, mystring, currCtrl, lastCursorPosition);
+        btn = new wxButton(this, i + 2, mystring, wxDefaultPosition, wxSize(20,20));
     }
     for (int i = 0; i<9; i++) 
         btnSizer->Add(charBtns[i], 0, wxALL, 2);
@@ -87,7 +87,7 @@ void TruthTreeFrame::handleTxtCtrlSwitch(wxFocusEvent &fe) {
 
 void TruthTreeFrame::handleSymbolButton(wxCommandEvent &ce) {
     wxObject *o = ce.GetEventObject();
-    SymbolButton *sb = (SymbolButton *) o;
+    wxButton *sb = (wxButton *) o;
 
     std::cout << "Bressed: " << sb->GetLabel() << "\n";
 
@@ -99,13 +99,13 @@ void TruthTreeFrame::handleSymbolButton(wxCommandEvent &ce) {
 }
 
 
-SymbolButton::SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextCtrl *&cCtrl, long &cp) : 
-    wxButton(frame, id, specialChar, wxDefaultPosition, wxSize(20,20)),
-    currCtrl {cCtrl},
-    lastCursorPosition {cp}
-{
-    // this->Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
-    std::cout << "Char: " << specialChar << " initialized with id: " << id << "\n";
-}
+// SymbolButton::SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextCtrl *&cCtrl, long &cp) : 
+//     wxButton(frame, id, specialChar, wxDefaultPosition, wxSize(20,20)),
+//     currCtrl {cCtrl},
+//     lastCursorPosition {cp}
+// {
+//     // this->Bind(wxEVT_BUTTON, SymbolButton::handleClick, this);
+//     std::cout << "Char: " << specialChar << " initialized with id: " << id << "\n";
+// }
 
-void SymbolButton::handleClick(wxCommandEvent &ce) { }
+// void SymbolButton::handleClick(wxCommandEvent &ce) { }
