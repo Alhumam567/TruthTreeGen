@@ -5,6 +5,8 @@
     #include <wx/wx.h>
 #endif
 
+#include "TruthTreeModel.h"
+
 
 // class SymbolButton: public wxButton 
 // {
@@ -25,6 +27,8 @@ class TruthTreeFrame: public wxFrame
 
     wxButton* charBtns[9];
     long lastCursorPosition;
+
+    TruthTreeModel model;
 
     wxButton generateTreeBtn;
 

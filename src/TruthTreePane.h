@@ -5,10 +5,14 @@
     #include <wx/wx.h>
 #endif
 
+#include "TruthTreeModel.h"
+
 class TruthTreePane : public wxScrolledWindow
 {
+    TruthTreeModel &model;
+
 public:
-    TruthTreePane(wxWindow* parent, wxWindowID id);
+    TruthTreePane(wxWindow* parent, wxWindowID id, TruthTreeModel &m);
 };
 
 #endif

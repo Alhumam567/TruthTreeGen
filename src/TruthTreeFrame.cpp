@@ -15,7 +15,8 @@ TruthTreeFrame::TruthTreeFrame() :
     currCtrl {argCtrl},
     charBtns {},
     lastCursorPosition {},
-    generateTreeBtn {this, 2}
+    generateTreeBtn {this, 2},
+    model {std::vector<std::string>{}, ""}
 {
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -40,14 +41,13 @@ TruthTreeFrame::TruthTreeFrame() :
         wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
         // btn = new SymbolButton(this, i + 2, mystring, currCtrl, lastCursorPosition);
         btn = new wxButton(this, i + 2, mystring, wxDefaultPosition, wxSize(20,20));
-    }
-    for (int i = 0; i<9; i++) 
-        btnSizer->Add(charBtns[i], 0, wxALL, 2);
+        btnSizer->Add(btn, 0, wxALL, 2);
+    }    
 
     mainSizer->Add(btnSizer, 0, wxEXPAND);
     mainSizer->Add(inputSizer, 0, wxEXPAND);
 
-    TruthTreePane* my_image = new TruthTreePane(this, wxID_ANY);
+    TruthTreePane* my_image = new TruthTreePane(this, wxID_ANY, model);
     mainSizer->Add(my_image, 1, wxEXPAND);
 
     argCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrlSwitch, this);
@@ -73,8 +73,8 @@ void TruthTreeFrame::handleGenerateTree(wxCommandEvent &ce)
     // Tokenizing w.r.t. space
     while(getline(check1, intermediate, ',')) args.push_back(intermediate);
     
-    TruthTreeModel m {args, std::string(this->concCtrl->GetValue().ToUTF8())};
-    m.printModel();
+    model = {args, std::string(this->concCtrl->GetValue().ToUTF8())};
+    model.printModel();
 }
 
 void TruthTreeFrame::handleTxtCtrlSwitch(wxFocusEvent &fe) {
