@@ -10,7 +10,7 @@ Any previous statements that may occur before this decomposition will still hold
 To prove that a logical formula is valid, the tree must decompose fully into a contradiction, that is, every branch must be closed by a contradiction. If any branch is left open after fully decomposing every statement in the branch, then the formula is invalid and thus a counterexample for the argument can be derived from that specific branch by starting at the top of the tree and recovering all literals that are part of that branch. 
 
 The purpose of this program is to generate a complete truth tree for symbolic logical formulas of the following types:
-+ Propisitional Logic
++ Propositional Logic
 + Predicate Logic
   - Identity
   - Operations

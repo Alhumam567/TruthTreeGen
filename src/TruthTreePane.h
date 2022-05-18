@@ -13,6 +13,8 @@ class TruthTreePane : public wxScrolledWindow
 
 public:
     TruthTreePane(wxWindow* parent, wxWindowID id, TruthTreeModel &m);
+
+    void update();
 };
 
 #endif

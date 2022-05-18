@@ -5,7 +5,6 @@
 #endif
 
 #include "TruthTreeGen.h"
-#include "TruthTreePane.h"
 #include "TruthTreeModel.h"
 
 TruthTreeFrame::TruthTreeFrame() : 
@@ -47,8 +46,8 @@ TruthTreeFrame::TruthTreeFrame() :
     mainSizer->Add(btnSizer, 0, wxEXPAND);
     mainSizer->Add(inputSizer, 0, wxEXPAND);
 
-    TruthTreePane* my_image = new TruthTreePane(this, wxID_ANY, model);
-    mainSizer->Add(my_image, 1, wxEXPAND);
+    this->treeDiag = new TruthTreePane(this, wxID_ANY, model);
+    mainSizer->Add(this->treeDiag, 1, wxEXPAND);
 
     argCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrlSwitch, this);
     concCtrl->Bind(wxEVT_SET_FOCUS, TruthTreeFrame::handleTxtCtrlSwitch, this);
@@ -73,8 +72,10 @@ void TruthTreeFrame::handleGenerateTree(wxCommandEvent &ce)
     // Tokenizing w.r.t. space
     while(getline(check1, intermediate, ',')) args.push_back(intermediate);
     
-    model = {args, std::string(this->concCtrl->GetValue().ToUTF8())};
-    model.printModel();
+    this->model = {args, std::string(this->concCtrl->GetValue().ToUTF8())};
+    this->model.printModel();
+    
+    this->treeDiag->update();
 }
 
 void TruthTreeFrame::handleTxtCtrlSwitch(wxFocusEvent &fe) {

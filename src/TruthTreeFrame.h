@@ -6,6 +6,7 @@
 #endif
 
 #include "TruthTreeModel.h"
+#include "TruthTreePane.h"
 
 
 // class SymbolButton: public wxButton 
@@ -29,6 +30,7 @@ class TruthTreeFrame: public wxFrame
     long lastCursorPosition;
 
     TruthTreeModel model;
+    TruthTreePane *treeDiag;
 
     wxButton generateTreeBtn;
 
