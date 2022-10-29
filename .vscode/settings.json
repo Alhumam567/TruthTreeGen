@@ -55,6 +55,12 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "codecvt": "cpp"
-    }
+        "codecvt": "cpp",
+        "bit": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "random": "cpp",
+        "numbers": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

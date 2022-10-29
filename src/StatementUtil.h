@@ -10,6 +10,8 @@ struct Statement {
     bool isLiteral; 
 };
 
+extern std::string specialChars[9];
+
 class StatementUtil
 {
     enum class OP_PREC{ UNIVERSAL=0, EXIST=0, NOT=1, AND=2, OR=3, COND=4, BICOND=4, ERR=-1 };

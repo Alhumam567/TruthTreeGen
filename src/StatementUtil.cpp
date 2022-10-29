@@ -3,8 +3,19 @@
 #include <string>
 #include <regex>
 
-#include "TruthTreeGen.h"
 #include "StatementUtil.h"
+
+std::string specialChars[9] {
+    "\u2200", // Universal Quantifier
+    "\u2203", // Existential Quantifier
+    "\uFFE2", // Negation
+    "\u2227", // Conjunction
+    "\u2228", // Disjunction
+    "\u2192", // Conditional
+    "\u2194", // Biconditional
+    "\u003D", // Equality
+    "\u2260", // Inequality
+};
 
 std::size_t StatementUtil::strlen_utf8(const std::string& str) {
 	std::size_t length = 0;

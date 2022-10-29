@@ -1,24 +1,9 @@
-#ifndef TTF_H 
-#define TTF_H
-
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
 
 #include "TruthTreeModel.h"
 #include "TruthTreePane.h"
-
-
-// class SymbolButton: public wxButton 
-// {
-//     wxTextCtrl *&currCtrl;
-//     long &lastCursorPosition;
-
-// public:
-//     SymbolButton(wxFrame *frame, int id, wxString specialChar, wxTextCtrl *&currCtrl, long &cp);
-
-//     void handleClick(wxCommandEvent &ce);
-// };
 
 
 class TruthTreeFrame: public wxFrame 
@@ -41,6 +26,3 @@ public:
     void handleSymbolButton(wxCommandEvent &ce);
     void handleGenerateTree(wxCommandEvent &ce);
 };
-
-
-#endif

@@ -4,7 +4,7 @@
     #include <wx/wx.h>
 #endif
 
-#include "TruthTreeGen.h"
+#include "TruthTreeFrame.h"
 #include "TruthTreeModel.h"
 
 TruthTreeFrame::TruthTreeFrame() : 
