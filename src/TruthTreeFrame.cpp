@@ -37,9 +37,9 @@ TruthTreeFrame::TruthTreeFrame() :
     
     int i = 0;
     for (auto &btn : charBtns) {
-        wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
+        // wxString mystring(specialChars[i++].c_str(), wxConvUTF8);
         // btn = new SymbolButton(this, i + 2, mystring, currCtrl, lastCursorPosition);
-        btn = new wxButton(this, i + 2, mystring, wxDefaultPosition, wxSize(20,20));
+        btn = new wxButton(this, i + 2, "", wxDefaultPosition, wxSize(20,20));
         btnSizer->Add(btn, 0, wxALL, 2);
     }    
 

@@ -2,19 +2,31 @@
 #include <codecvt>
 #include <string>
 #include <regex>
+#include <unordered_map>
 
 #include "StatementUtil.h"
 
-std::string specialChars[9] {
-    "\u2200", // Universal Quantifier
-    "\u2203", // Existential Quantifier
-    "\uFFE2", // Negation
-    "\u2227", // Conjunction
-    "\u2228", // Disjunction
-    "\u2192", // Conditional
-    "\u2194", // Biconditional
-    "\u003D", // Equality
-    "\u2260", // Inequality
+enum class OP {
+    UNQ = 0,
+    EXQ = 0,
+    NEG = 1,
+    CONJ = 2,
+    DISJ =3,
+    COND = 4,
+    BICOND = 4,
+    EQ,
+    INEQ,
+    NONE = -1
+};
+
+std::unordered_map<std::string, OP> op_mapping = {
+    {"\u2200", OP::UNQ}, // Universal Quantifier
+    {"\u2203", OP::EXQ}, // Existential Quantifier
+    {"\uFFE2", OP::NEG}, // Negation
+    {"\u2227", OP::CONJ}, // Conjunction
+    {"\u2228", OP::DISJ}, // Disjunction
+    {"\u2192", OP::COND}, // Conditional
+    {"\u2194", OP::BICOND} // Biconditional
 };
 
 std::size_t StatementUtil::strlen_utf8(const std::string& str) {
@@ -72,7 +84,7 @@ Statement StatementUtil::initializeStatement(const std::string &str, bool verbos
 bool StatementUtil::decompose(const Statement &statement, std::vector<Statement> *decomposedStatement)
 {
     bool split;
-    OP_PREC op = StatementUtil::getOperatorPrecendence(statement.mc);
+    OP op = StatementUtil::getOperatorPrecendence(statement.mc);
 
     Statement left {StatementUtil::initializeStatement(statement.value.substr(0, statement.mc_pos), true)};
     Statement right {StatementUtil::initializeStatement(statement.value.substr(statement.mc_pos+3, 
@@ -109,7 +121,7 @@ bool StatementUtil::decompose(const Statement &statement, std::vector<Statement>
     // Decomposing rules
     switch (op) {
         // Universal/Existential Case
-        case OP_PREC::UNIVERSAL: {
+        case OP::UNQ: {
             if (statement.mc == "\u2200") // Universal
             {}
             else                      // Existential
@@ -117,7 +129,7 @@ bool StatementUtil::decompose(const Statement &statement, std::vector<Statement>
             break;
         }
         // And: Split conjuncts in same branch
-        case OP_PREC::AND: {
+        case OP::CONJ: {
             decomposedStatement->resize(2);
 
             decomposedStatement->at(0) = left;
@@ -127,7 +139,7 @@ bool StatementUtil::decompose(const Statement &statement, std::vector<Statement>
             break;
         }
         // Or: Split disjuncts into different branches
-        case OP_PREC::OR: {
+        case OP::DISJ: {
             decomposedStatement->resize(2);
 
             decomposedStatement->at(0) = left;
@@ -137,7 +149,7 @@ bool StatementUtil::decompose(const Statement &statement, std::vector<Statement>
             break;
         }
         // Not: Depends on inner nested connective
-        case OP_PREC::NOT: {
+        case OP::NEG: {
             split = StatementUtil::decompose(right, decomposedStatement);
 
             // Biconditional special case
@@ -158,7 +170,7 @@ bool StatementUtil::decompose(const Statement &statement, std::vector<Statement>
             break;
         }
         // Conditional/Biconditional case
-        case OP_PREC::COND: {
+        case OP::COND: {
             if (statement.mc == "\u2192") { // Conditional
                 decomposedStatement->resize(2);
 
@@ -181,9 +193,6 @@ bool StatementUtil::decompose(const Statement &statement, std::vector<Statement>
             }
 
             split = true;
-            break;
-        }
-        case OP_PREC::ERR: {
             break;
         }
     }
@@ -268,7 +277,7 @@ int StatementUtil::findMainConnective(Statement &statement)
             }
             i--;
 
-            if (StatementUtil::getOperatorPrecendence(utf8_c) != OP_PREC::ERR) 
+            if (StatementUtil::getOperatorPrecendence(utf8_c) != OP::NONE) 
                 isLogicalConn = true;
 		}
 
@@ -290,15 +299,10 @@ int StatementUtil::findMainConnective(Statement &statement)
 /** Given a utf-8 string "character", if its a logical connection then it returns the connections
  *  operator precedence, else OP_ERR
  */
-StatementUtil::OP_PREC StatementUtil::getOperatorPrecendence(const std::string &utfc) {
-    if (utfc == "\uFFE2") return OP_PREC::NOT;
-    else if (utfc == "\u2227") return OP_PREC::AND;
-    else if (utfc == "\u2228") return OP_PREC::OR;
-    else if (utfc == "\u2192") return OP_PREC::COND;
-    else if (utfc == "\u2194") return OP_PREC::BICOND;
-    else if (utfc == "\u2200") return OP_PREC::UNIVERSAL;
-    else if (utfc == "\u2203") return OP_PREC::EXIST;
-    else return OP_PREC::ERR;
+OP StatementUtil::getOperatorPrecendence(const std::string &utfc) {
+    OP op = op_mapping[utfc];
+    if (op == OP::NONE) return OP::NONE;
+    return op;
 }
 
 /** Compares the precedence of two logical connectives and returns if the new connective precedence is 
@@ -307,8 +311,8 @@ StatementUtil::OP_PREC StatementUtil::getOperatorPrecendence(const std::string &
 bool StatementUtil::hasHigherPrecendence(const std::string &oldConn, const std::string &newConn) {
     if (oldConn == "not-found") return true;
 
-    OP_PREC oldP {StatementUtil::getOperatorPrecendence(oldConn)};
-    OP_PREC newP {StatementUtil::getOperatorPrecendence(newConn)};
+    OP oldP {StatementUtil::getOperatorPrecendence(oldConn)};
+    OP newP {StatementUtil::getOperatorPrecendence(newConn)};
     
     return oldP < newP;
 }

@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #include <regex>
+#include <unordered_map>
 
 struct Statement {
     std::string value;              // The statement string
@@ -10,15 +11,14 @@ struct Statement {
     bool isLiteral; 
 };
 
-extern std::string specialChars[9];
+enum class OP;
+extern std::unordered_map<std::string, OP> op_mapping;
 
 class StatementUtil
 {
-    enum class OP_PREC{ UNIVERSAL=0, EXIST=0, NOT=1, AND=2, OR=3, COND=4, BICOND=4, ERR=-1 };
-
 private:
     static bool hasHigherPrecendence(const std::string &oldConn, const std::string &newConn);
-    static OP_PREC getOperatorPrecendence(const std::string &conn);
+    static OP getOperatorPrecendence(const std::string &conn);
     static int findMainConnective(Statement &statement);
 
 public:
