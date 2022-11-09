@@ -14,6 +14,21 @@ struct Statement {
 enum class OP;
 extern std::unordered_map<std::string, OP> op_mapping;
 
+struct literal {
+    char l[6];
+    OP op;
+};
+
+typedef struct literal Literal;
+
+struct statement {
+    statement *left;
+    statement *right;
+    Literal *val;
+};
+
+typedef struct statement Stm;
+
 class StatementUtil
 {
 private:
