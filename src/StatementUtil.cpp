@@ -4,6 +4,7 @@
 #include <regex>
 #include <unordered_map>
 
+#include "grammar.h"
 #include "StatementUtil.h"
 
 enum class OP {
@@ -20,14 +21,14 @@ enum class OP {
 };
 
 std::unordered_map<std::string, OP> op_mapping = {
-    {"\u2200", OP::UNQ}, // Universal Quantifier
-    {"\u2203", OP::EXQ}, // Existential Quantifier
-    {"\uFFE2", OP::NEG}, // Negation
-    {"\u2227", OP::CONJ}, // Conjunction
-    {"\u2228", OP::DISJ}, // Disjunction
-    {"\u2192", OP::COND}, // Conditional
-    {"\u2194", OP::BICOND} // Biconditional
-};
+    {UNIQ, 0}, // Universal Quantifier
+    {EXIQ, 0}, // Existential Quantifier
+    {NEGA, 1}, // Negation
+    {CONJU, 2}, // Conjunction
+    {DISJU, 3}, // Disjunction
+    {CONDI, 4}, // Conditional
+    {BICONDI, 4} // Biconditional
+}
 
 std::size_t StatementUtil::strlen_utf8(const std::string& str) {
 	std::size_t length = 0;
@@ -84,7 +85,7 @@ Statement StatementUtil::initializeStatement(const std::string &str, bool verbos
 bool StatementUtil::decompose(const Statement &statement, std::vector<Statement> *decomposedStatement)
 {
     bool split;
-    OP op = StatementUtil::getOperatorPrecendence(statement.mc);
+    int8_t op = StatementUtil::getOperatorPrecendence(statement.mc);
 
     Statement left {StatementUtil::initializeStatement(statement.value.substr(0, statement.mc_pos), true)};
     Statement right {StatementUtil::initializeStatement(statement.value.substr(statement.mc_pos+3, 

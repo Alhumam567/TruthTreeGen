@@ -1,0 +1,19 @@
+{UNQ, 0}, // Universal Quantifier
+{EXQ, 0}, // Existential Quantifier
+{NEG, 1}, // Negation
+{CONJ, 2}, // Conjunction
+{DISJ, 3}, // Disjunction
+{COND, 4}, // Conditional
+{BICOND, 4} // Biconditional
+
+P V Q -> R
+
+Structural Recursion Formula for well-formed formulae:
+
+    1. Any literal is a formula (e.g.):
+        P, Q, Fa, Gbc
+    2. Negation of a literal is a formula (e.g.):
+        ~P, ~Q, ~Fa, ~Gbc
+    2. Any two formulas φ,ψ can be combined using a truth-functor as a new formula with surrounding smooth brackets (e.g.):
+        (φ^ψ), (φVψ), (φ->ψ), (φ<->ψ)
+    3. Otherwise, it is not a formula
