@@ -55,4 +55,18 @@ public:
     void printModel();
 };
 
+/*
+ * Updates: 08-02-2024
+ * 
+ * 	1. Model will include a language, inputted either via user input or automatically parsed from input
+ * 		- Language is made up of a set of name letters N, set of variables X, set of n-place predicate letters
+ *  2. Model will verify inputs are valid according to FOL language formation rules
+ * 		Structural Induction:
+ * 			1. n-place predicate followed by n-terms is a formula
+ * 			2. if φ is a formula, ~φ is a formula
+ * 			3. if φ and ψ are formulas: φ^ψ, φVψ, φ->ψ, φ<->ψ are formulas
+ * 			4. if φ is a formula and ξ is a variable, ∀ξφ and ∃ξφ are formulas  
+ */
+
+
 #endif
