@@ -1,0 +1,21 @@
+Structural Recursion Formula for well-formed formulae:
+
+    1. Any literal is a formula (e.g.):
+        P, Q, Fa, Gbc
+    2. Negation of a literal is a formula (e.g.):
+        ~P, ~Q, ~Fa, ~Gbc
+    3. Any two formulas φ,ψ can be combined using a truth-functor as a new formula with
+       surrounding smooth brackets (e.g.):
+        (φ^ψ), (φVψ), (φ->ψ), (φ<->ψ)
+    4. Otherwise, it is not a formula
+
+But this leaves no room for statements like (P -> Q V R) as they are ambiguous/
+
+To weaken the rules for constructing valid statements, we will create a precedence for 
+each truth-functor that describes a hierarchy:
+
+    UNQ = EXQ <== NEG <== CONJ = DISJ <== COND = BICOND
+
+Similar to BEDMAS, this hierarchy will allow us to read statements like (P -> Q V (R ^ S)) 
+as the hierarchy describes the conditional as having the highest precedence over all other 
+truth functors
