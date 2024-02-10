@@ -28,7 +28,7 @@ std::unordered_map<std::string, OP> op_mapping = {
     {DISJU, 3}, // Disjunction
     {CONDI, 4}, // Conditional
     {BICONDI, 4} // Biconditional
-}
+};
 
 std::size_t StatementUtil::strlen_utf8(const std::string& str) {
 	std::size_t length = 0;
