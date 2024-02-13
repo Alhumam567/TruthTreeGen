@@ -208,7 +208,7 @@ bool StatementUtil::decompose(const Statement &statement, std::vector<Statement>
 bool StatementUtil::isLiteral(Statement &statement) 
 {
     // Main connective is neither a negation or literal
-    if (statement.mc != "\uFFE2" && statement.mc != "") { 
+    if (!(statement.mc == "\uFFE2" || statement.mc == "")) { 
         statement.isLiteral = false; 
         return false;
     }
@@ -254,7 +254,7 @@ void StatementUtil::addNegation(Statement &statement) {
 
 int StatementUtil::findMainConnective(Statement &statement)
 {
-    int bracket_c {0}, curr_pos {-1};
+    int bracket_c {0};
     char c;
     std::string utf8_c;
     bool isLogicalConn;
@@ -262,18 +262,15 @@ int StatementUtil::findMainConnective(Statement &statement)
     // Loop over all bytes in the sequence of characters, there could be
     // UTF-8 characters that are variably lengthed
     for(std::size_t i = 0; i < statement.value.length(); i++){
-        curr_pos = i;
         c = statement.value[i];
         utf8_c = c;
         isLogicalConn = false;
 
         // If UTF-8 character
         if ((c & 0x80) == 0x80) {
-            utf8_c = c;
-
             c = statement.value[++i];
             while ((c & 0xC0) == 0x80) {
-                utf8_c.append(std::string(1, c));
+                utf8_c += c;
                 c = statement.value[++i];
             }
             i--;
@@ -288,7 +285,7 @@ int StatementUtil::findMainConnective(Statement &statement)
             bracket_c--;
         } else if (isLogicalConn && bracket_c == 0) {
             if (StatementUtil::hasHigherPrecendence(statement.mc, utf8_c)) {
-                statement.mc_pos = curr_pos;
+                statement.mc_pos = i;
                 statement.mc = utf8_c;
             }
         }
