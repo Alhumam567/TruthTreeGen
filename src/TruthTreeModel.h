@@ -66,6 +66,7 @@ public:
  * 			2. if φ is a formula, ~φ is a formula
  * 			3. if φ and ψ are formulas: φ^ψ, φVψ, φ->ψ, φ<->ψ are formulas
  * 			4. if φ is a formula and ξ is a variable, ∀ξφ and ∃ξφ are formulas  
+ * 
  */
 
 

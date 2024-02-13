@@ -1,21 +1,49 @@
-Structural Recursion Formula for well-formed formulae:
+Model Language:
+    First Order Logic/Predicate Logic is based upon name-letters, variables, and variadic predicate
+    letters:
 
-    1. Any literal is a formula (e.g.):
-        P, Q, Fa, Gbc
-    2. Negation of a literal is a formula (e.g.):
-        ~P, ~Q, ~Fa, ~Gbc
+        1. name-letters: lower-case letters not quantified
+        2. variables: lower-case letters quantified
+        3. predicates: Upper-case letters
+
+    By construction of the program, name-letters will be differentiated from variables by whether 
+    they are closed under some quantifier. This decision means that open sentences are not possible
+    this way, as they will be interpreted as name-letters (Fx). Zero place predicates function as 
+    stand-ins for propositional sentences.
+
+    The truth-functors will be:  
+        
+        1. ∧: and 
+        2. ∨: or
+        3. ¬: negation
+        4. →: conditional
+        5. ↔: biconditional
+
+    As well as the quantifiers:
+
+        1. ∀: universal quantifier
+        2. ∃: existential quantifier
+
+Structural Recursion definition for well-formed Predicate Logic formulae:
+    1. Any atomic is a formula (e.g.): P, Q, Fa, Gbc
+    2. Negation of a formula is a formula (e.g.): φ is formula, ~φ is formula
     3. Any two formulas φ,ψ can be combined using a truth-functor as a new formula with
-       surrounding smooth brackets (e.g.):
+    surrounding smooth brackets (e.g.):
         (φ^ψ), (φVψ), (φ->ψ), (φ<->ψ)
-    4. Otherwise, it is not a formula
+    4. If φ is a formula and ξ a variable, ∀ξφ and ∃ξφ are also formulas
+    5. Otherwise, it is not a formula
 
-But this leaves no room for statements like (P -> Q V R) as they are ambiguous/
+    But this leaves no room for statements like (P -> Q V R) as they are ambiguous
 
-To weaken the rules for constructing valid statements, we will create a precedence for 
-each truth-functor that describes a hierarchy:
+    To weaken the rules for constructing valid statements, we will create a precedence for 
+    each truth-functor that describes a hierarchy:
 
-    UNQ = EXQ <== NEG <== CONJ = DISJ <== COND = BICOND
+        ∀ = ∃ <== ¬ <== ∧ = ∨ <== → = ↔ 
 
-Similar to BEDMAS, this hierarchy will allow us to read statements like (P -> Q V (R ^ S)) 
-as the hierarchy describes the conditional as having the highest precedence over all other 
-truth functors
+    Similar to BEDMAS, this hierarchy will allow us to read statements like (P → Q ∨ (R ∧ S)) 
+    as the hierarchy describes the conditional as having the highest precedence over all other 
+    truth functors followed by the ∨ and then the ∧.
+
+θωερτψυιοπασδφγηςκλζχξωβνμ
+∀∃
+∧∨¬→↔
