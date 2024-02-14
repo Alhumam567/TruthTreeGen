@@ -181,6 +181,19 @@ TruthTreeModel::~TruthTreeModel() {
     }
 }
 
+/**
+ * 
+ */
+void TruthTreeModel::parselang() {
+    std::vector<std::string> formulae = this->premises;
+    formulae.push_back(this->conclusion);
+
+    for (const auto &formula : formulae) {
+        
+    }
+}
+
+
 /** Main TruthTreeModel method, this will generate the entire Truth Tree, stopping only when every branch is either
  *  complete open or closed.
  */

@@ -44,12 +44,19 @@ class TruthTreeModel
 
     std::vector<std::string> premises;
     std::string conclusion;
+    
+    // Input Language
+    std::vector<char> nameletters;
+    std::vector<char> variables;
+    std::vector<char> predicates;
+
     bool complete;
 
 public:
     TruthTreeModel(const std::vector<std::string> &arguments, const std::string &conclusion);
     ~TruthTreeModel();
 
+    void parselang();
     int generateTree();
     bool applyDecompositionRule(TruthTreeBranch *branch, const Statement &statement);
     void printModel();
