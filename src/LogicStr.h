@@ -24,6 +24,7 @@ public:
 
 class LogicStr {
 private:
+    u_char *chars;
 public:
     const std::string v;
 
