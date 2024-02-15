@@ -1,12 +1,12 @@
 #ifndef GRAMMAR
 #define GRAMMAR
 
-#define UNIQ "\u2200"
-#define EXIQ "\u2203" 
-#define NEGA "\uFFE2"
-#define CONJU "\u2227"
-#define DISJU "\u2228"
-#define CONDI "\u2192"
-#define BICONDI "\u2194"
+#define UNQ "\u2200"
+#define EXQ "\u2203" 
+#define NEG "\uFFE2"
+#define CONJ "\u2227"
+#define DISJ "\u2228"
+#define COND "\u2192"
+#define BICOND "\u2194"
 
 #endif
