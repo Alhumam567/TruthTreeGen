@@ -3,34 +3,36 @@
 
 typedef struct utf8_char {
     int len;
-    const char *val;
-} u_char;
+    char *val;
+} uchar;
 
-class U_Char_Iterator : public std::iterator<std::forward_iterator_tag, u_char, int, const u_char *, u_char> {
-    u_char ch;
-    
-    u_char *arr;
+class UChar_Iterator : public std::iterator<std::forward_iterator_tag, uchar *, int, const uchar **, char *> {
 public:
-    U_Char_Iterator(u_char start);
+    uchar **chs;
+    size_t chs_sz;
+    int ind;
 
-    operator*() { return ch; }
-    operator++(); //ch++
-    operator++(int); //++ch
-    operator--(); //ch--
-    operator--(int); //--ch
-    operator==(u_char_it it2);
-    operator!=(u_char_it it2);
+    explicit UChar_Iterator(uchar **arr, size_t sz, int start);
+
+    reference operator*() { return chs[ind]->val; }
+    UChar_Iterator operator++() { auto ret = *this; ind++; return ret; } //ch++
+    UChar_Iterator operator++(int) { ind++; return *this; } //++ch
+    UChar_Iterator operator--() { auto ret = *this; ind--; return ret; } //ch--
+    UChar_Iterator operator--(int) { ind--; return *this; } //--ch
+    bool operator==(UChar_Iterator it2) { return ind == it2.ind && chs == it2.chs; }
+    bool operator!=(UChar_Iterator it2) { return ind != it2.ind || chs != it2.chs; }
 };
 
 class LogicStr {
 private:
-    u_char *chars;
+    uchar **chars;
+    size_t chars_sz;
 public:
     const std::string v;
 
     LogicStr(const std::string str);
     ~LogicStr();
 
-    U_Char_Iterator *begin();
-    U_Char_Iterator *end();
+    UChar_Iterator begin();
+    UChar_Iterator end();
 };

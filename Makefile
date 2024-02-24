@@ -6,7 +6,7 @@ all: $(FILES)
 	g++ -g -Wall $(FILES) -o main.exe 
 
 $(OUT)%.o: $(SRC)%.cpp
-	g++ -c $< -o $@
+	g++ -g -c $< -o $@
 
 clean:
 	rm -f $(OUT)*.o $(OUT)*.exe
