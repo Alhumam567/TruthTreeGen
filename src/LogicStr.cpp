@@ -50,10 +50,11 @@ LogicStr::LogicStr(const std::string str) : v (str) {
         
         // Store uchar
         if ((str[si] & 0x80) == 0x80) { // utf8
-            this->chars[i]->val[si] = str[si];
+            int vi = 0;
+            this->chars[i]->val[vi++] = str[si];
             si++;
             while ((str[si] & 0xC0) == 0x80) { 
-                this->chars[i]->val[si] = str[si];
+                this->chars[i]->val[vi++] = str[si];
                 si++;
             }
         } else {
