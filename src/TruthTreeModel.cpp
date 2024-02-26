@@ -1,4 +1,7 @@
+#include <string_view>
+
 #include "TruthTreeModel.h"
+#include "LogicStr.h"
 
 /** Branch constructor, evaluates status after lines are processed:
  *      lines  : All statements that will be placed in this segment
@@ -134,9 +137,10 @@ void TruthTreeBranch::printBranch() {
  */
 TruthTreeModel::TruthTreeModel(const std::vector<std::string> &premises, const std::string &conclusion) : 
     complete {false},
-    conclusion {conclusion},
-    premises {premises}
-{
+    premises {} {
+    for (auto &premise : premises) this->premises.push_back(LogicStr(premise));
+    this->conclusion { LogicStr(conclusion) };
+
     Statement negConc {StatementUtil::initializeStatement(conclusion, true)};
     StatementUtil::addNegation(negConc);
 
@@ -185,11 +189,33 @@ TruthTreeModel::~TruthTreeModel() {
  * 
  */
 void TruthTreeModel::parselang() {
-    std::vector<std::string> formulae = this->premises;
-    formulae.push_back(this->conclusion);
+    std::string_view pred_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    for (const auto &formula : formulae) {
-        
+    std::vector<LogicStr> formulae = this->premises;
+    formulae.push_back(this->conclusion);
+    const std::string pred_letters {"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+    const std::string lowercase_letters {"abcdefghijklmnopqrstuvwxyz"};
+    const std::string quantifiers {"∀∃"};
+    bool prev_quant = false;
+
+    for (auto &formula : formulae) {
+        for (auto it = formula.begin(); it != formula.end(); it++) {
+            uchar *uc = *it;
+            if (uc->len != 1) {
+                if (quantifiers.find(uc->val) != std::string::npos) prev_quant = true;
+                else prev_quant = false;
+                continue;
+            }
+
+            char ch = *(uc->val);
+            if (pred_letters.find(ch) != std::string::npos)
+                predicates.insert(ch);
+            else if (lowercase_letters.find(ch) != std::string::npos && prev_quant && nameletters.find(ch) == nameletters.end())
+                variables.insert(ch);
+            else if (lowercase_letters.find(ch) != std::string::npos && variables.find(ch) == variables.end())
+                nameletters.insert(ch);   
+            prev_quant = false;
+        }
     }
 }
 

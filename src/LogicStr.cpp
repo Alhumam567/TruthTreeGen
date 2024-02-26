@@ -26,7 +26,7 @@ LogicStr::LogicStr(const std::string str) : v (str) {
         }
         len++;
     }
-    std::cout << "len:" << len << std::endl;
+    
     this->chars = (uchar **) calloc(len, sizeof(uchar *));
     this->chars_sz = len;
 
@@ -66,9 +66,9 @@ LogicStr::LogicStr(const std::string str) : v (str) {
     }
 }
 LogicStr::~LogicStr() {
-    for (int i = 0; i < this->chars_sz; i++) free(chars[i]);
+    // for (int i = 0; i < this->chars_sz; i++) free(chars[i]);
 
-    free(chars);
+    // free(chars);
 }
 UChar_Iterator LogicStr::begin() { 
     return UChar_Iterator(this->chars, this->chars_sz, 0);

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "StatementUtil.h"
+#include "LogicStr.h"
 
 /** A section of the truth tree containing all statements occurring after the end of previous 
  *  parent branch, up to but not including any children branches. This is not a full branch of 
@@ -42,8 +43,8 @@ class TruthTreeModel
     std::vector<TruthTreeBranch *> closedBranches;
     std::vector<TruthTreeBranch *> completeOpenBranches;
 
-    std::vector<std::string> premises;
-    std::string conclusion;
+    std::vector<LogicStr> premises;
+    LogicStr conclusion;
     
     // Input Language
     std::vector<char> nameletters;

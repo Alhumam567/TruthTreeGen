@@ -6,7 +6,7 @@ typedef struct utf8_char {
     char *val;
 } uchar;
 
-class UChar_Iterator : public std::iterator<std::forward_iterator_tag, uchar *, int, const uchar **, char *> {
+class UChar_Iterator : public std::iterator<std::forward_iterator_tag, uchar *, int, const uchar **, uchar *> {
 public:
     uchar **chs;
     size_t chs_sz;
@@ -14,7 +14,7 @@ public:
 
     explicit UChar_Iterator(uchar **arr, size_t sz, int start);
 
-    reference operator*() { return chs[ind]->val; }
+    reference operator*() { return chs[ind]; }
     UChar_Iterator operator++() { auto ret = *this; ind++; return ret; } //ch++
     UChar_Iterator operator++(int) { ind++; return *this; } //++ch
     UChar_Iterator operator--() { auto ret = *this; ind--; return ret; } //ch--
