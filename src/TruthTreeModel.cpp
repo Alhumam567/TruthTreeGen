@@ -189,10 +189,9 @@ TruthTreeModel::~TruthTreeModel() {
  * 
  */
 void TruthTreeModel::parselang() {
-    std::string_view pred_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
     std::vector<LogicStr> formulae = this->premises;
     formulae.push_back(this->conclusion);
+    
     const std::string pred_letters {"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
     const std::string lowercase_letters {"abcdefghijklmnopqrstuvwxyz"};
     const std::string quantifiers {"∀∃"};
