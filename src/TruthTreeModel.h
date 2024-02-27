@@ -2,6 +2,8 @@
 #define TTMODEL_H
 
 #include <iostream>
+#include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 #include "StatementUtil.h"
@@ -47,10 +49,11 @@ class TruthTreeModel
     LogicStr conclusion;
     
     // Input Language
-    std::vector<char> nameletters;
-    std::vector<char> variables;
-    std::vector<char> predicates;
+    std::unordered_set<char> nameletters;
+    std::unordered_set<char> variables;
+    std::unordered_map<char, std::unordered_set<int>> predicates;
 
+    bool is_decision_procedure;
     bool complete;
 
 public:

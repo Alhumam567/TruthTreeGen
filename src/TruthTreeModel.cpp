@@ -1,4 +1,5 @@
 #include <string_view>
+#include <vector>
 
 #include "TruthTreeModel.h"
 #include "LogicStr.h"
@@ -201,14 +202,29 @@ void TruthTreeModel::parselang() {
         for (auto it = formula.begin(); it != formula.end(); it++) {
             uchar *uc = *it;
             if (uc->len != 1) {
-                if (quantifiers.find(uc->val) != std::string::npos) prev_quant = true;
+                if (quantifiers.find(uc->val) != std::string::npos) {
+                    prev_quant = true;
+                    is_decision_procedure = false;
+                }
                 else prev_quant = false;
                 continue;
             }
 
             char ch = *(uc->val);
-            if (pred_letters.find(ch) != std::string::npos)
-                predicates.insert(ch);
+            if (pred_letters.find(ch) != std::string::npos){
+                int places = 0;
+                auto it2 = it;
+                it2++;
+                while (it2 != formula.end() && lowercase_letters.find(*((*it2)->val)) != std::string::npos) { 
+                    it2++;
+                    places++;
+                }
+
+                if (predicates.find(ch) != predicates.end()) 
+                    predicates[ch].insert(places);
+                else
+                    predicates.insert({ch,std::unordered_set<int>{places}});
+            }
             else if (lowercase_letters.find(ch) != std::string::npos && prev_quant && nameletters.find(ch) == nameletters.end())
                 variables.insert(ch);
             else if (lowercase_letters.find(ch) != std::string::npos && variables.find(ch) == variables.end())

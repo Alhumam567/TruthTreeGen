@@ -4,13 +4,17 @@
 #include <iostream>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
+#include <utility>
 
 #include "LogicStr.h"
 
 void parselang(std::vector<LogicStr> formulae) {
     std::unordered_set<char> nameletters;
     std::unordered_set<char> variables;
-    std::unordered_set<char> predicates;
+    std::unordered_map<char,std::unordered_set<int>> predicates;
+    bool is_decision_procedure = true;
+
     const std::string pred_letters {"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
     const std::string lowercase_letters {"abcdefghijklmnopqrstuvwxyz"};
     const std::string quantifiers {"∀∃"};
@@ -20,14 +24,29 @@ void parselang(std::vector<LogicStr> formulae) {
         for (auto it = formula.begin(); it != formula.end(); it++) {
             uchar *uc = *it;
             if (uc->len != 1) {
-                if (quantifiers.find(uc->val) != std::string::npos) prev_quant = true;
+                if (quantifiers.find(uc->val) != std::string::npos) {
+                    prev_quant = true;
+                    is_decision_procedure = false;
+                }
                 else prev_quant = false;
                 continue;
             }
 
             char ch = *(uc->val);
-            if (pred_letters.find(ch) != std::string::npos)
-                predicates.insert(ch);
+            if (pred_letters.find(ch) != std::string::npos){
+                int places = 0;
+                auto it2 = it;
+                it2++;
+                while (it2 != formula.end() && lowercase_letters.find(*((*it2)->val)) != std::string::npos) { 
+                    it2++;
+                    places++;
+                }
+
+                if (predicates.find(ch) != predicates.end()) 
+                    predicates[ch].insert(places);
+                else
+                    predicates.insert({ch,std::unordered_set<int>{places}});
+            }
             else if (lowercase_letters.find(ch) != std::string::npos && prev_quant && nameletters.find(ch) == nameletters.end())
                 variables.insert(ch);
             else if (lowercase_letters.find(ch) != std::string::npos && variables.find(ch) == variables.end())
@@ -43,7 +62,14 @@ void parselang(std::vector<LogicStr> formulae) {
     for (auto it = variables.begin(); it != variables.end(); it++) std::cout << *it << std::endl;
 
     std::cout << "predicates: " << predicates.size() << std::endl;
-    for (auto it = predicates.begin(); it != predicates.end(); it++) std::cout << *it << std::endl;
+    for (auto it = predicates.begin(); it != predicates.end(); it++) {
+        std::cout << it->first << " ";
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++) 
+            std::cout << *it2 << " ";
+        std::cout << std::endl;
+    } 
+
+    std::cout << "decision procedure: " << is_decision_procedure << std::endl;
 }
 
 void iterate(char *str) {
@@ -94,6 +120,11 @@ int main (int argc, char **argv) {
         LogicStr("∀xFx∨∀yGy"), 
         LogicStr("∃x(Fx∨Gx)∨Fab"),
     };
+    parselang(formulae);
+    formulae = std::vector<LogicStr>({ 
+        LogicStr("P∧Q→R"), 
+        LogicStr("P∧Q") 
+    });
     parselang(formulae);
 
     return 0;
