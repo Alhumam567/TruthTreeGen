@@ -315,3 +315,51 @@ bool StatementUtil::hasHigherPrecendence(const std::string &oldConn, const std::
     return oldP < newP;
 }
 
+const std::string pred_letters {"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+const std::string lowercase_letters {"abcdefghijklmnopqrstuvwxyz"};
+const std::string quantifiers {"∀∃"};
+const std::string tp_functors {"∧∨→↔"};
+const std::string negation {"¬"};
+const size_t npos = std::string::npos;
+
+bool verify(UChar_Iterator it, UChar_Iterator end) {   
+    bool prev_is_functor = true;
+    
+    for (; it != end; it++) {
+        uchar *uc = *it;
+
+        if (!strncmp(uc->val, "(", 2)) { // Recurse into parentheses
+            if (!prev_is_functor) return false;
+            UChar_Iterator start = it;
+            start++;
+            UChar_Iterator end2 = start;
+            int st = 0;
+            while (end2 != end) {
+                uc = *end2;
+                if (st == 0 && !strncmp(uc->val, ")", 2)) break;
+                else if (!strncmp(uc->val, "(", 2)) st++;
+                else if (!strncmp(uc->val, ")", 2)) st--;
+                end2++;
+            }
+
+            if (end2 == end || !verify(start, end2)) return false;
+            it = end2;
+        } else if (uc->val == negation) {
+            if (!prev_is_functor) return false;
+            prev_is_functor = !prev_is_functor;
+        } else if (tp_functors.find(uc->val) != npos && prev_is_functor) {
+            return false; 
+        } else if (lowercase_letters.find(uc->val) != npos) {
+            return false;
+        } else if (pred_letters.find(uc->val) != npos) {
+            if (!prev_is_functor) return false;
+            it++;
+            while (it != end && lowercase_letters.find((*it)->val) != npos) it++;
+            it--;
+        }
+        prev_is_functor = !prev_is_functor;
+    }
+
+    return (prev_is_functor) ? false : true;
+}
+
