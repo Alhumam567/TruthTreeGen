@@ -114,11 +114,24 @@ bool verify(UChar_Iterator it, UChar_Iterator end) {
     for (; it != end; it++) {
         uchar *uc = *it;
 
-        if (!strncmp(uc->val, "(", 2)) { // Recurse into parentheses
+        if (quantifiers.find(uc->val) != npos) {
             if (!prev_is_functor) return false;
-            UChar_Iterator start = it;
-            start++;
-            UChar_Iterator end2 = start;
+            it++;
+            
+            if (it == end || lowercase_letters.find((*it)->val) == npos) return false;
+            it++;
+
+            if (it == end) return false;
+            uc = *it;
+        }
+
+        // Opening Parenthese
+        if (!strncmp(uc->val, "(", 2)) { 
+            if (!prev_is_functor) return false;
+
+            UChar_Iterator it2 = it;
+            it2++;
+            UChar_Iterator end2 = it2;
             int st = 0;
             while (end2 != end) {
                 uc = *end2;
@@ -128,25 +141,35 @@ bool verify(UChar_Iterator it, UChar_Iterator end) {
                 end2++;
             }
 
-            if (end2 == end || !verify(start, end2)) return false;
+            // Recurse into parentheses
+            if (end2 == end || !verify(it2, end2)) return false;
             it = end2;
-        } else if (uc->val == negation) {
+        } 
+        // Negation functor 
+        else if (uc->val == negation) { 
             if (!prev_is_functor) return false;
-            prev_is_functor = !prev_is_functor;
-        } else if (tp_functors.find(uc->val) != npos && prev_is_functor) {
-            return false; 
-        } else if (lowercase_letters.find(uc->val) != npos) {
-            return false;
-        } else if (pred_letters.find(uc->val) != npos) {
+            prev_is_functor = !prev_is_functor; // keep flag as previous functor
+        } 
+        // Predicate letter
+        else if (pred_letters.find(uc->val) != npos) {
             if (!prev_is_functor) return false;
             it++;
+
+            // Move past predicate places
             while (it != end && lowercase_letters.find((*it)->val) != npos) it++;
             it--;
+        } 
+        // Fail cases
+        else if (!strncmp(uc->val, ")", 2) || // Closing Parenthese
+                 tp_functors.find(uc->val) != npos && prev_is_functor || // Two-place functor following functor
+                 lowercase_letters.find(uc->val) != npos) { // Lowercase letter 
+            return false;
         }
+        
         prev_is_functor = !prev_is_functor;
     }
 
-    return (prev_is_functor) ? false : true;
+    return !prev_is_functor;
 }
 
 int main (int argc, char **argv) {
@@ -165,18 +188,18 @@ int main (int argc, char **argv) {
     // P→Q
     // ∀xFx
 
-    std::vector<LogicStr> formulae { 
-        LogicStr("∀x(Fx∨Gx)"), 
-        LogicStr("∀xFx∨∀yGy"), 
-        LogicStr("∃x(Fx∨Gx)∨Fab"),
-    };
-    parselang(formulae);
-    formulae = std::vector<LogicStr>({ 
-        LogicStr("P∧Q→R"), 
-        LogicStr("P∧Q") 
-    });
-    parselang(formulae);
-    
+    // std::vector<LogicStr> formulae { 
+    //     LogicStr("∀x(Fx∨Gx)"), 
+    //     LogicStr("∀xFx∨∀yGy"), 
+    //     LogicStr("∃x(Fx∨Gx)∨Fab"),
+    // };
+    // parselang(formulae);
+    // formulae = std::vector<LogicStr>({ 
+    //     LogicStr("P∧Q→R"), 
+    //     LogicStr("P∧Q") 
+    // });
+    // parselang(formulae);
+
     // ∧∨¬→↔
     std::cout << "Valid Formulae Test" << std::endl;
     std::vector<LogicStr> valid_formulae = {
@@ -188,20 +211,30 @@ int main (int argc, char **argv) {
         LogicStr("¬(P∧¬Q)"), 
         LogicStr("(P∧Q)∧R"), 
         LogicStr("R∧(P∧Q)"), 
-        LogicStr("¬((Q→¬R)∧¬Q)")
+        LogicStr("¬((Q→¬R)∧¬Q)"),
+        LogicStr("∀xFx"),
+        LogicStr("∀x(Fx∧Gx)"),
+        LogicStr("∀x(Fx∧Gx)∧P"),
     };
-    for (int i = 0; i < valid_formulae.size(); i++) std::cout << verify(valid_formulae[i].begin(), valid_formulae[i].end()) << std::endl;
+    for (int i = 0; i < valid_formulae.size(); i++) 
+        std::cout << verify(valid_formulae[i].begin(), valid_formulae[i].end()) << std::endl;
+
     std::cout << "Invalid Formulae Test" << std::endl;
     std::vector<LogicStr> invalid_formulae = {
         LogicStr("→RR"), 
         LogicStr("→"), 
         LogicStr("¬"), 
         LogicStr("¬P∧"), 
+        LogicStr("P∧¬→R"),
         LogicStr("()"), 
+        LogicStr(")"), 
         LogicStr("¬((Q→¬R)P∧¬Q"),
-        LogicStr("¬(Q→¬R)∧¬Q)")
+        LogicStr("¬(Q→¬R)∧¬Q)"),
+        LogicStr("∀x"),
+        LogicStr("∀x∧(Fx∧Gx)"),
     };
-    for (int i = 0; i < invalid_formulae.size(); i++) std::cout << verify(invalid_formulae[i].begin(), invalid_formulae[i].end()) << std::endl;
+    for (int i = 0; i < invalid_formulae.size(); i++) 
+        std::cout << verify(invalid_formulae[i].begin(), invalid_formulae[i].end()) << std::endl;
     
     return 0;
 }
