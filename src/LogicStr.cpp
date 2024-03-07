@@ -70,6 +70,7 @@ LogicStr::~LogicStr() {
 
     // free(chars);
 }
+
 UChar_Iterator LogicStr::begin() { 
     return UChar_Iterator(this->chars, this->chars_sz, 0);
 }

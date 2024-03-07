@@ -15,10 +15,10 @@ public:
     explicit UChar_Iterator(uchar **arr, size_t sz, int start);
 
     reference operator*() { return chs[ind]; }
-    UChar_Iterator operator++() { auto ret = *this; ind++; return ret; } //ch++
-    UChar_Iterator operator++(int) { ind++; return *this; } //++ch
-    UChar_Iterator operator--() { auto ret = *this; ind--; return ret; } //ch--
-    UChar_Iterator operator--(int) { ind--; return *this; } //--ch
+    UChar_Iterator operator++() { ind++; return *this; } //++ch
+    UChar_Iterator operator++(int) { auto ret = *this; ind++; return ret; } //ch++
+    UChar_Iterator operator--() { ind--; return *this; } //--ch
+    UChar_Iterator operator--(int) { auto ret = *this; ind--; return ret; } //ch--
     bool operator==(UChar_Iterator it2) { return ind == it2.ind && chs == it2.chs; }
     bool operator!=(UChar_Iterator it2) { return ind != it2.ind || chs != it2.chs; }
 };
